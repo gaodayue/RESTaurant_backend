@@ -42,3 +42,18 @@ exports.restaurants_rules = {
 		}
 	]
 };
+
+exports.dishes_rules = {
+	'name': [
+		{
+			'rule': 'required',
+			'error': 'Missing Dish Name'
+		}
+	],
+	'price': [
+		{
+			'rule': 'required',
+			'error': 'Missing Dish Price'
+		}
+	]
+};
