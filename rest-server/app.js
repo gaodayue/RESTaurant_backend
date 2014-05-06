@@ -4,66 +4,27 @@ var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var session = require('express-session');
-var cs = require('cansecurity'), cansec;
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
 var restaurants = require('./routes/restaurants');
+var dishes = require('./routes/dishes');
+var invitations = require('./routes/invitations');
+var accounts = require('./routes/accounts');
 
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-
-var user = {name:"john",pass:"1234",age:25};
-cansec = cs.init({
-    validate: function(login,password,callback){
-        if (user.name !== login) {
-            // no such user - ERROR
-            callback(false,null,"invaliduser");
-        } else if (password === undefined) {
-            // never asked to check a password, just send the user - GOOD
-        callback(true,user,user.name,shaHash(pass));
-        } else if (user.pass !== pass) {
-            // asked to check password, but it didn't match - ERROR
-            callback(false,null,"invalidpass");
-        } else {
-            // user matches, password matches - GOOD
-            callback(true,user,user.name,shaHash(pass));
-        }
-    },
-    sessionKey: 'SESSIONKEY'
-});
 
 app.use(favicon());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
-app.use(session({secret: "agf67dchkQ!"}));
-app.use(cansec.validate);
-app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
-app.use('/users', users);
 app.use('/restaurants', restaurants);
-
-app.get('/public', function(req, res) {
-    res.type('text/plain');
-    res.send('hello public');
-});
-
-app.get('/secure', cansec.restrictToLoggedIn, function(err, req, res) {
-    if (err) {
-        /*console.log('error status : ' + err.status);
-        console.log('error type : ' + err.type);*/
-        res.send(err);
-    }
-    res.type('text/plain');
-    res.send('hello secure');
-});
+app.use('/dishes', dishes);
+app.use('/invitations', invitations);
+app.use('/customer/accounts', accounts);
 
 app.use(function(req, res, next){
     res.status(404);

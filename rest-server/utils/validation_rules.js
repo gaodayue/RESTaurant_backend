@@ -44,6 +44,12 @@ exports.restaurants_rules = {
 };
 
 exports.dishes_rules = {
+	'r_id': [
+		{
+			'rule': 'required',
+			'error': 'Missing Restaurant ID'
+		}
+	],
 	'name': [
 		{
 			'rule': 'required',
@@ -54,6 +60,75 @@ exports.dishes_rules = {
 		{
 			'rule': 'required',
 			'error': 'Missing Dish Price'
+		}
+	]
+};
+
+exports.invitations_rules = {
+	'restaurant_id': [
+		{
+			'rule': 'required',
+			'error': 'Missing Restaurant ID'
+		}
+	],
+	'request_date': [
+		{
+			'rule': 'required',
+			'error': 'Missing Invitation Request Date'
+		}
+	],
+	'request_period': [
+		{
+			'rule': 'required',
+			'error': 'Missing Invitation Request Period'
+		}
+	],
+	'customer_ids': [
+		{
+			'rule': 'required',
+			'error': 'Missing Customer IDs'
+		}
+	]
+};
+
+exports.invitation_dishes_rules = {
+	'd_id': [
+		{
+			'rule': 'required',
+			'error': 'Missing Dish ID'
+		}
+	],
+	'name': [
+		{
+			'rule': 'required',
+			'error': 'Missing Dish Name'
+		}
+	],
+	'price': [
+		{
+			'rule': 'required',
+			'error': 'Missing Dish Price'
+		}
+	],
+	'quantity': [
+		{
+			'rule': 'required',
+			'error': 'Missing Dish Quantity'
+		}
+	]
+};
+
+exports.accounts_rules = {
+	'phoneno': [
+		{
+			'rule': 'required',
+			'error': 'Missing Phone No'
+		}
+	],
+	'password': [
+		{
+			'rule': 'required',
+			'error': 'Missing Password'
 		}
 	]
 };
