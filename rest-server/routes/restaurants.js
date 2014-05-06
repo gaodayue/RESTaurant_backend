@@ -132,8 +132,10 @@ router.post('/create', function(req, res, next) {
 				if(err === 'error')
 					res.json(400, 'unexpected error');
 				else
-					res.json(200, 'ok')
+					res.json(400, err);
 			}
+			else
+				res.json(200, 'ok')
 		});
 	}
 });

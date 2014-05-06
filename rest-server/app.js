@@ -9,6 +9,7 @@ var restaurants = require('./routes/restaurants');
 var dishes = require('./routes/dishes');
 var invitations = require('./routes/invitations');
 var accounts = require('./routes/accounts');
+var orders = require('./routes/orders');
 
 var app = express();
 
@@ -25,6 +26,7 @@ app.use('/restaurants', restaurants);
 app.use('/dishes', dishes);
 app.use('/invitations', invitations);
 app.use('/customer/accounts', accounts);
+app.use('/orders', orders);
 
 app.use(function(req, res, next){
     res.status(404);
