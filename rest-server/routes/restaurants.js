@@ -18,47 +18,55 @@ router.get('/nearby', function(req, res) {
 
 router.get('/show/:RESTID', function(req, res) {
 	var restaurantId = req.params.RESTID;
-	var data;
-	// check if the RESTID exist or not in database
-	var query = connection.query('SELECT * FROM restaurants WHERE rest_id = ? LIMIT 1', restaurantId, function(err, restRow) {
-		if (err)
-			res.json(400, util.showError(err.message));
-		else {
-			async.waterfall([
-				function(callback){
-					if (restRow.length <= 0){
-						res.json(400, util.showError('Restaurant does not exist'));
-						callback('not exist');
+	var data, query;
+	if (restaurantId != parseInt(restaurantId))
+		res.json(400, util.showError('invalid request'));
+	else{
+		async.waterfall([
+			function(callback){
+				// check if the RESTID exist or not in database
+				query = connection.query('SELECT * FROM restaurants WHERE rest_id = ? LIMIT 1', restaurantId, function(err, restRow) {
+					if(err)
+						callback('error');
+					else {
+						if (typeof restRow !== 'undefined' && restRow.length > 0)
+							callback(null, restRow[0]);
+						else
+							callback('not exist');
 					}
-					else{
-						callback(null, restRow[0]);
+				});
+			},
+			function(arg1, callback){
+				query = connection.query('SELECT * FROM dishes WHERE d_rest_id = ?', restaurantId, function(err, dishRow) {
+					if (err)
+						callback('error');
+					else {
+						var data = {
+							'rest_id' : arg1.rest_id,
+							'name' : arg1.rest_name,
+							'address' : arg1.rest_address,
+							'geo_location' : {
+								'longitude' : arg1.rest_geo_location.x,
+								'latitude' : arg1.rest_geo_location.y
+							},
+							'pic' : arg1.rest_pic,
+							'dishes' : dishRow
+						};
+						callback(null, data);
 					}
-				},
-				function(arg1, callback){
-					var query = connection.query('SELECT * FROM dishes WHERE d_rest_id = ?', restaurantId, function(err, dishRow) {
-						if (err)
-							res.json(400, util.showError(err.message));
-						else {
-							var data = {
-								'rest_id' : arg1.rest_id,
-								'name' : arg1.rest_name,
-								'address' : arg1.rest_address,
-								'geo_location' : {
-									'longitude' : arg1.rest_geo_location,
-									'latitude' : arg1.rest_geo_location
-								},
-								'pic' : arg1.rest_pic,
-								'dishes' : dishRow
-							};
-							callback(null, data);
-						}
-					});
-				}
-			], function(err, result){
+				});
+			}
+		], function(err, result){
+			if(err){
+				if(err === 'error')
+					res.json(400, util.showError('unexpected error'));
+				else if(err === 'not exist')
+					res.json(400, util.showError('Restaurant does not exist'));
+			}
+			else
 				res.json(200, result);
-			});
-		}
-	});
+		});
+	}
 });
 
 router.post('/create', function(req, res, next) {
@@ -72,7 +80,7 @@ router.post('/create', function(req, res, next) {
 		'r_pic' : restaurant.r_pic,
 		'r_mgr_name' : restaurant.r_mgr_name, // this is to create restaurant_account
 		'r_mgr_pwd' : restaurant.r_mgr_pwd // this is to create restaurant_account
-	};	
+	};
 	// validate input first
 	var rules = are(validationRules.restaurants_rules);
 	if (!rules.validFor(post)) {
@@ -81,25 +89,23 @@ router.post('/create', function(req, res, next) {
     res.json(400, util.showError(errorMessage));
 	}
 	else {
-		var geo, pic, raId;
-		// create RESTAURANT_ACCOUNT and then get the raId
-		var ra = {
-			'ra_name' : restaurant.r_mgr_name,
-			'ra_password' : util.createHash(restaurant.r_mgr_pwd)
-		};
-		query = connection.query('INSERT INTO restaurant_accounts SET ?', ra, function(err, result) {
-			if (err) {
-				res.json(400, util.showError(err.message));
-				return res.end;
-			}
-
-			async.waterfall([
-				function(callback){
-					raId = result.insertId;
-					callback(null, raId);
-				}
-			], function(err, result) {
-				// last callback
+		async.waterfall([
+			function(callback){
+				var geo, pic, raId;
+				// create RESTAURANT_ACCOUNT and then get the raId
+				var ra = {
+					'ra_name' : restaurant.r_mgr_name,
+					'ra_password' : util.createHash(restaurant.r_mgr_pwd)
+				};
+				query = connection.query('INSERT INTO restaurant_accounts SET ?', ra, function(err, result) {
+					if (err)
+						callback('error');
+					else {
+						callback(null, result.insertId);
+					}
+				});
+			},
+			function(arg1, callback){
 				if (restaurant.r_longitude && restaurant.r_latitude)
 					geo = 'GeomFromText("POINT('+restaurant.r_longitude+' '+restaurant.r_latitude+')")';
 				else
@@ -107,7 +113,7 @@ router.post('/create', function(req, res, next) {
 				pic = restaurant.r_pic ? restaurant.r_pic : null;
 				var data = {
 					//'rest_id' : 1,
-					'rest_owner_id' : result,
+					'rest_owner_id' : arg1,
 					'rest_name' : post.r_name,
 					'rest_address' : post.r_addr,
 					//'rest_geo_location' : geo,
@@ -116,41 +122,19 @@ router.post('/create', function(req, res, next) {
 				// insert to database
 				query = connection.query('INSERT INTO restaurants SET rest_geo_location = GeomFromText(?), ?', ['POINT('+restaurant.r_longitude+' '+restaurant.r_latitude+')',data], function(err, result) {
 					if (err)
-						res.json(400, util.showError(err.message));
+						callback('error');
 					else
-						res.send(200, 'ok'); // TO DO : we can change to json-formatted success
+						callback(null, data);
 				});
-			});
-
-			/*raId = result.insertId;
-
-			if (restaurant.r_longitude && restaurant.r_latitude)
-				geo = 'GeomFromText("POINT('+restaurant.r_longitude+' '+restaurant.r_latitude+')")';
-			else
-				geo = null;
-			pic = restaurant.r_pic ? restaurant.r_pic : null;
-			var data = {
-				//'rest_id' : 1,
-				'rest_owner_id' : raId,
-				'rest_name' : post.r_name,
-				'rest_address' : post.r_addr,
-				//'rest_geo_location' : geo,
-				'rest_pic' : pic
-			};
-			// insert to database
-			query = connection.query('INSERT INTO restaurants SET rest_geo_location = GeomFromText(?), ?', ['POINT('+restaurant.r_longitude+' '+restaurant.r_latitude+')',data], function(err, result) {
-				if (err)
-					res.json(400, util.showError(err.message));
+			}
+		], function(err, result){
+			if(err){
+				if(err === 'error')
+					res.json(400, 'unexpected error');
 				else
-					res.send(200, 'ok'); // TO DO : we can change to json-formatted success
-			});*/
+					res.json(200, 'ok')
+			}
 		});
-		
-		//console.log('The query is : ' + query.sql);
-		//connection.end(function(err) {
-		  // The connection is terminated now
-		//});
-		
 	}
 });
 
@@ -163,14 +147,12 @@ router.post('/update/:RESTID', function(req, res) {
 			var result;
 			var query = connection.query('SELECT rest_id FROM restaurants WHERE rest_id = ?', restaurantId, function(err, row){
 				if(err)
-					result = false;
+					callback('error');
 				else {
-					if (typeof row !== 'undefined' && row.length > 0){
+					if (typeof row !== 'undefined' && row.length > 0)
 				  	result = true; // the array is defined and has at least one element
-					}
-					else{
+					else
 						result = false;
-					}
 				}
 				if(result)
 					callback(null, result);
@@ -213,26 +195,24 @@ router.post('/update/:RESTID', function(req, res) {
 				// update to database
 				var query = connection.query('UPDATE restaurants SET rest_geo_location = GeomFromText(?), ? WHERE rest_id = ?', ['POINT('+restaurant.r_longitude+' '+restaurant.r_latitude+')',data, restaurantId], function(err, result) {
 					if (err) {
-						callback('err.message');
-						//res.json(400, util.showError(err.message));
+						callback('error');
 					}
 					else {
 						callback(null, 'ok');
-						//res.send(200, 'ok'); // TO DO : we can change to json-formatted success
 					}
 				});
 			}
 		}
 	], function(err, result){
-		if(err){
-			if (err == 'not exist')
-				res.json(400, util.showError('Restaurant does not exist'));
-			else 
-				res.json(400, util.showError(err));
-		}
-		else {
-			res.send(200, 'ok'); // TO DO : we can change to json-formatted success
-		}
+			if(err){
+				if (err == 'not exist')
+					res.json(400, util.showError('Restaurant does not exist'));
+				else 
+					res.json(400, util.showError('unexpected error'));
+			}
+			else {
+				res.send(200, 'ok'); // TO DO : we can change to json-formatted success
+			}
 	});
 });
 
