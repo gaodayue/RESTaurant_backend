@@ -3,24 +3,48 @@ exports.restaurants_rules = {
 		{
 			'rule': 'required',
 			'error': 'Missing Restaurant Name'
-		}
+		},
+		{
+    	'rule': 'alphaNumeric',
+    	'error': 'Must be names and numbers'
+  	}
 	],
 	'r_addr': [
 		{
 			'rule': 'required',
 			'error': 'Missing Restaurant Address'
-		}
+		},
+		{
+    	'rule': 'alphaNumeric',
+    	'error': 'Must be names and numbers'
+  	}
 	],
 	'r_longitude': [
 		{
 			'rule': 'required',
 			'error': 'Missing Restaurant Longitude'
+		},
+		{
+			'rule': 'decimal',
+			'error': 'Must be a number'
+		},
+		{
+			'rule': 'between',
+			'error': 'must be between -180 < x < 180'
 		}
 	],
 	'r_latitude': [
 		{
 			'rule': 'required',
 			'error': 'Missing Restaurant Latitude'
+		},
+		{
+			'rule': 'decimal',
+			'error': 'Must be a number'
+		},
+		{
+			'rule': 'between',
+			'error': 'must be between -90 < x < 90'
 		}
 	],
 	'r_pic': [
@@ -48,18 +72,30 @@ exports.dishes_rules = {
 		{
 			'rule': 'required',
 			'error': 'Missing Restaurant ID'
+		},
+		{
+			'rule': 'int',
+			'error' 'ID has to be an integer'
 		}
 	],
 	'name': [
 		{
 			'rule': 'required',
 			'error': 'Missing Dish Name'
+		},
+		{
+			'rule': 'alphaNumeric',
+			'error': 'Must be names and/or number'
 		}
 	],
 	'price': [
 		{
 			'rule': 'required',
 			'error': 'Missing Dish Price'
+		},
+		{
+			'rule': 'decimal',
+			'error': 'Must be a number'
 		}
 	]
 };
@@ -69,6 +105,10 @@ exports.invitations_rules = {
 		{
 			'rule': 'required',
 			'error': 'Missing Restaurant ID'
+		},
+		{
+			'rule': 'int',
+			'error' 'ID has to be an integer'
 		}
 	],
 	'request_date': [
@@ -102,18 +142,30 @@ exports.invitation_dishes_rules = {
 		{
 			'rule': 'required',
 			'error': 'Missing Dish Name'
+		},
+		{
+			'rule': 'alphaNumeric',
+			'error': 'Must be a name and/or number'
 		}
 	],
 	'price': [
 		{
 			'rule': 'required',
 			'error': 'Missing Dish Price'
+		},
+		{
+			'rule': 'decimal',
+			'error': 'Must be a number'
 		}
 	],
 	'quantity': [
 		{
 			'rule': 'required',
 			'error': 'Missing Dish Quantity'
+		},
+		{
+			'rule': 'decimal',
+			'error': 'Must be a number'
 		}
 	]
 };
