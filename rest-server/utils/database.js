@@ -1,9 +1,15 @@
 var mysql      = require('mysql');
 var async = require('async');
-var c = mysql.createConnection({
+/*var c = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
   password : 'root',
+  database : 'project'
+});*/ // local
+var c = mysql.createConnection({
+  host     : '118.193.54.222',
+  user     : 'bjtu',
+  password : 'bjtu',
   database : 'project'
 });
 

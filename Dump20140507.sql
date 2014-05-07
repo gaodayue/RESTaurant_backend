@@ -33,7 +33,7 @@ CREATE TABLE `customer_accounts` (
   `cust_joined_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`cust_id`),
   UNIQUE KEY `cust_phoneno_UNIQUE` (`cust_phoneno`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -48,8 +48,7 @@ CREATE TABLE `dining_tables` (
   `tbl_rest_id` bigint(20) NOT NULL,
   `tbl_capacity` int(11) NOT NULL,
   `tbl_display_order` int(11) NOT NULL,
-  PRIMARY KEY (`tbl_id`),
-  KEY `tbl_dining_tables_restaurants_tbl_rest_id_idx` (`tbl_rest_id`)
+  PRIMARY KEY (`tbl_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -66,8 +65,7 @@ CREATE TABLE `dishes` (
   `d_name` varchar(255) NOT NULL,
   `d_price` decimal(10,2) NOT NULL,
   `d_display_order` int(11) NOT NULL,
-  PRIMARY KEY (`d_id`),
-  KEY `fk_dishes_restaurants_rest_id_idx` (`d_rest_id`)
+  PRIMARY KEY (`d_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -84,8 +82,7 @@ CREATE TABLE `invitations` (
   `inv_order_id` bigint(20) NOT NULL,
   `inv_is_host` enum('true','false') NOT NULL,
   `inv_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `inv_status` char(1) NOT NULL,
-  KEY `fk_invitations_customer_accounts_inv_cust_id_idx` (`inv_cust_id`)
+  `inv_status` char(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -102,9 +99,8 @@ CREATE TABLE `order_items` (
   `oitem_name` varchar(255) NOT NULL,
   `oitem_price` decimal(10,2) NOT NULL,
   `oitem_quantity` int(11) NOT NULL,
-  PRIMARY KEY (`oitem_id`),
-  KEY `fk_order_items_orders_oitem_order_id_idx` (`oitem_order_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`oitem_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -126,10 +122,8 @@ CREATE TABLE `orders` (
   `o_status` tinyint(4) NOT NULL,
   `o_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `o_updated_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY (`o_id`),
-  KEY `fk_orders_restaurants_o_rest_id_idx` (`o_rest_id`),
-  KEY `fk_orders_customer_accounts_o_cust_id_idx` (`o_cust_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`o_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -146,7 +140,7 @@ CREATE TABLE `restaurant_accounts` (
   `ra_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `ra_access_token` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`ra_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -163,9 +157,8 @@ CREATE TABLE `restaurants` (
   `rest_address` varchar(255) NOT NULL,
   `rest_geo_location` point DEFAULT NULL,
   `rest_pic` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`rest_id`),
-  KEY `fk_restaurants_restaurant_accounts_rest_owner_id_idx` (`rest_owner_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`rest_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -197,4 +190,4 @@ CREATE TABLE `table_schedules` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-05-07 18:10:36
+-- Dump completed on 2014-05-07 21:03:40
