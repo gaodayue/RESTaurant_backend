@@ -9,9 +9,9 @@ var express = require('express'),
     connection = db.connection(),
     async = require('async');
 
-router.post('/', function(req, res) {
+router.get('/', function(req, res) {
 	var query;
-  var custId = req.body.cust_id;
+  var custId = req.param('cust_id');
   if(!custId)
   	res.json(400, util.showError('missing customer ID'));
   else {
@@ -41,10 +41,10 @@ router.post('/', function(req, res) {
   }
 });
 
-router.post('/:INVID', function(req, res) {
+router.get('/:INVID', function(req, res) {
 	var query;
 	var invitationId = req.params.INVID;
-	var custId = req.body.cust_id;
+	var custId = req.param('customer_id');
 	if(!custId)
   	res.json(400, util.showError('missing customer ID'));
   else {
@@ -197,9 +197,8 @@ router.post('/create', function(req, res) {
 			}
 			var insert = {
 				'o_rest_id' : invitation.restaurant_id,
-				'o_cust_id' : 1, // TODO : the host ID
-				'o_cust_phoneno' : 1, // TODO : the host phonenumber
-				'o_totalprice' : totalPrice, // TODO : calculate the total price
+				'o_cust_id' : invitation.customer_id,
+				'o_totalprice' : totalPrice,
 				'o_num_people' : invitation.customer_ids.length,
 				'o_request_date' : invitation.request_date,
 				'o_request_period' : invitation.request_period,
@@ -315,7 +314,7 @@ router.post('/create', function(req, res) {
 			var data = [];
 			for(var i in invitation.customer_ids){ // creating array for bulk insert
 				// inv_id, inv_cust_id, inv_order_id, inv_is_host, inv_status
-				var a = [arg2, invitation.customer_ids[i], arg1.o_id, true, 's']; // TODO : change is_host
+				var a = [arg2, invitation.customer_ids[i], arg1.o_id, (invitation.customer_ids[i] == invitation.customer_id), 's'];
 				data.push(a);
 			}
 			// insert to database

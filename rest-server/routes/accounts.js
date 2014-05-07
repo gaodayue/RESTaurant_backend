@@ -14,7 +14,7 @@ router.post('/signup', function(req, res) {
   var account = req.body;
   var query;
   // validate input first
-	var rules = are(validationRules.accounts_rules);
+	var rules = are(validationRules.account_signup_rules);
 	if (!rules.validFor(account)) {
 		var invalidFields = rules.getInvalidFields();
 		var errorMessage = invalidFields[Object.keys(invalidFields)[0]][0]; // only need to retrieve the last error
@@ -26,7 +26,7 @@ router.post('/signup', function(req, res) {
 				var access_token = uuid.v1();
 				var post = {
 					'cust_phoneno' : account.phoneno,
-					'cust_name' : '', // default
+					'cust_name' : account.name, // default
 					'cust_password' : util.createHash(account.password),
 					'cust_access_token' : access_token
 				};
@@ -58,7 +58,7 @@ router.post('/signup', function(req, res) {
 router.post('/signin', function(req, res) {
   var account = req.body;
   // validate input first
-	var rules = are(validationRules.accounts_rules);
+	var rules = are(validationRules.account_signin_rules);
 	if (!rules.validFor(account)) {
 		var invalidFields = rules.getInvalidFields();
 		var errorMessage = invalidFields[Object.keys(invalidFields)[0]][0]; // only need to retrieve the last error

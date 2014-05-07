@@ -10,7 +10,7 @@ var express = require('express'),
     async = require('async');
 
 router.get('/', function(req, res){
-	var restaurantId = req.body.rest_id;
+	var restaurantId = req.param('r_id');
 	if(!restaurantId)
 		res.json(400, util.showError('missing restaurant ID'));
 	else {
@@ -53,7 +53,7 @@ router.get('/', function(req, res){
 router.post('/create', function(req, res){
 	var num = req.body.num;
 	var capacity = req.body.capacity;
-	var restaurantId = req.body.rest_id;
+	var restaurantId = req.body.r_id;//req.param('r_id');
 	if(!restaurantId)
 		res.json(400, util.showError('missing restaurant ID'));
 	else {
@@ -89,7 +89,7 @@ router.post('/create', function(req, res){
 
 router.post('/delete/:TBLID', function(req, res){
 	var tableId = req.params.TBLID;
-	var restaurantId = req.body.rest_id;
+	var restaurantId = req.body.r_id;//req.param('r_id');
 	if(!restaurantId)
 		res.json(400, util.showError('missing restaurant ID'));
 	else {
@@ -118,7 +118,8 @@ router.post('/delete/:TBLID', function(req, res){
 });
 
 router.post('/reorder', function(req, res){
-	var restaurantId = req.body.rest_id;
+	var order = req.body.order; // new order of table id joined by '|'
+	var restaurantId = req.body.r_id;//req.param('r_id');
 	if(!restaurantId)
 		res.json(400, util.showError('missing restaurant ID'));
 	else {

@@ -11,7 +11,45 @@ var express = require('express'),
     connection = db.connection(),
     async = require('async');
 
-/* GET nearby restaurants. */
+
+router.get('/', function(req, res) {
+	var query;
+	async.waterfall([
+		function(callback){
+			var sql = 'SELECT rest_id, rest_name AS name, rest_address AS address, rest_geo_location AS geo_location, '+
+								'rest_pic AS pic, ra_id AS mgr_id, ra_name AS mgr_name '+
+								'FROM restaurants, restaurant_accounts '+
+								'WHERE rest_owner_id = ra_id';
+			query = connection.query(sql, function(err, result){
+				if(err)
+					callback('error');
+				else {
+					if(typeof result !== 'undefined' && result.length > 0){
+						for(var i in result){
+							result[i].geo_location.longitude = result[i].geo_location.x;
+							delete result[i].geo_location.x;
+							result[i].geo_location.latitude = result[i].geo_location.y;
+							delete result[i].geo_location.y;
+						}
+						callback(null, result);
+					}
+					else
+						callback('not exist');
+				}
+			});
+		}
+	], function(err, result){
+			if(err){
+				if(err === 'not exist')
+					res.json(400, util.showError('no restaurants!'));
+				else
+					res.json(400, util.showError('unexpected error'));
+			}
+			else
+				res.json(200, result);
+	});
+});
+
 router.get('/nearby', function(req, res) {
   res.send('TO BE IMPLEMENTED');
 });
@@ -213,7 +251,7 @@ router.post('/update/:RESTID', function(req, res) {
 					res.json(400, util.showError('unexpected error'));
 			}
 			else {
-				res.send(200, 'ok'); // TO DO : we can change to json-formatted success
+				res.send(200, 'ok'); // TODO : we can change to json-formatted success
 			}
 	});
 });

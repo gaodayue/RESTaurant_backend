@@ -9,11 +9,25 @@ var express = require('express'),
     connection = db.connection(),
     async = require('async');
 
-router.post('/', function(req, res) {
+function getOrderById(order, id) {
+  // filtering the device controller by id
+  return order.filter(
+    function(data){return data.o_id == id}
+  );
+}
+
+function getOrderItemByOrderId(orderItem, id) {
+  // filtering the device controller by id
+  return orderItem.filter(
+    function(data){return data.oitem_order_id == id}
+  );
+}
+
+router.get('/', function(req, res) {
 	var query;
-	var since = req.body.start_date;
-	var until = req.body.end_date;
-	var restaurantId = req.body.rest_id;
+	var since = req.param('start_date'); // TODO : validate this
+	var until = req.param('end_date');	// TODO : validate this
+	var restaurantId = req.param('r_id'); // TODO : validate this
 	if(!restaurantId)
 		res.json(400, util.showError('missing restaurant ID'));
 	else {
@@ -29,6 +43,7 @@ router.post('/', function(req, res) {
 						callback('error');
 					else{
 						if(typeof result !== 'undefined' && result.length > 0){
+							var orderIds = [];
 							var order = [];
 							for(var i in result){
 								var o = {
@@ -51,40 +66,56 @@ router.post('/', function(req, res) {
 									'updated_time' : result[i].o_updated_time
 								};
 								order.push(o);
+								orderIds.push(result[i].o_id);
 							}
-							callback(null, order);
+							callback(null, order, orderIds);
 						}
 						else
 							callback('not exist');
 					}
 				});
 			},
-			function(arg1, callback){
+			function(arg1, arg2, callback){ // arg1: array of order, arg2: array of order
 				// TODO : How to get all dishes for each order ?
 				// do we need to do select for each o_id ?
-				/*var sql = 'SELECT oitem_name, oitem_price, oitem_quantity FROM order_items WHERE oitem_order_id = ?';
-				query = connection.query(sql, JSON.stringify(arg1.o_id), function(err, result){
-					if(err)
+				var data = [];
+				var sql = 'SELECT oitem_order_id, oitem_name AS name, oitem_price AS price, oitem_quantity AS quantity FROM order_items WHERE oitem_order_id IN (?) ORDER BY oitem_order_id';
+				query = connection.query(sql, [arg2], function(err, result){
+					if(err){
+						console.log(query.sql);
 						callback('error');
+					}
 					else{
-						for(var i in result){
-							var data = {
+						/*for(var i in result){
+							var dish = {
 								//'d_id' : ? 
 								'name' : result[i].oitem_name,
 								'price' : result[i].oitem_price,
 								'quantity' : result[i].oitem_quantity
 							};
-							arg1.dishes.push(data);
+							var order = getOrderById(arg1, result[i].oitem_order_id)[0];
+							order.dishes.push(dish);
+							data.push(order);
+						} this wont show order that have no order items*/
+						for(var i in arg1){
+							var dishes = getOrderItemByOrderId(result, arg1[i].o_id); // the dish that has order id
+							if (dishes.length > 0){
+								for(var ii in dishes){
+									delete dishes[ii].oitem_order_id;
+								}
+								arg1[i].dishes = dishes;	
+							}
 						}
 						callback(null, arg1);
 					}
-				});*/
-				callback(null, 'pass by');
+				});
 			}
 		], function(err, result){
 				if(err){
 					if(err === 'error')
 						res.json(400, util.showError('unexpected error'));
+					else if(err === 'not exist')
+						res.json(400, util.showError('no orders yet'));
 					else
 						res.json(400, util.showError(err));
 				}

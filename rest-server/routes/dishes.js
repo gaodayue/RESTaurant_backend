@@ -52,29 +52,25 @@ router.post('/update/:DISHID', function(req, res) {
 	var dishId = req.params.DISHID;
 	var dishes = req.body;
 
-	async.series([
+	async.waterfall([
 		function(callback){
 			var result;
-			var query = connection.query('SELECT d_id FROM dishes WHERE d_id = ?', dishId, function(err, row){
+			var query = connection.query('SELECT d_id, d_name, d_price FROM dishes WHERE d_id = ?', dishId, function(err, row){
 				if(err)
 					callback('error');
 				else {
 					if (typeof row !== 'undefined' && row.length > 0)
-				  	result = true; // the array is defined and has at least one element
+				  	callback(null, row[0]);
 					else
-						result = false;
+						callback('not exist');
 				}
-				if(result)
-					callback(null, result);
-				else
-					callback('not exist');
 			});
 		},
-		function(callback){
+		function(arg1, callback){
 			var post = {
 				'r_id' :dishes.r_id,
-				'name' : dishes.name,
-				'price' : dishes.price
+				'name' : dishes.name ? dishes.name : arg1.d_name,
+				'price' : dishes.price ? dishes.price : arg1.d_price
 			};
 			// validate input first
 			var rules = are(validationRules.dishes_rules);
@@ -85,17 +81,15 @@ router.post('/update/:DISHID', function(req, res) {
 			}
 			else {
 				var data = {
-					'd_rest_id' : post.r_id,
 					'd_name' : post.name,
-					'd_price' : post.price,
-					'd_display_order' : 0 // TODO : determine default value
+					'd_price' : post.price
 				};
 				// update to database
 				query = connection.query('UPDATE dishes SET ? WHERE d_id = ? AND d_rest_id = ?', [data, dishId, post.r_id], function(err, result) {
 					if (err)
 						callback('error');
 					else
-						callback(null, 'ok'); // TO DO : we can change to json-formatted success
+						callback(null, 'ok'); // TODO : we can change to json-formatted success
 				});
 			}
 		}
@@ -107,7 +101,7 @@ router.post('/update/:DISHID', function(req, res) {
 					res.json(400, util.showError('unexpected error'));
 			}
 			else {
-				res.send(200, 'ok'); // TO DO : we can change to json-formatted success
+				res.send(200, 'ok'); // TODO : we can change to json-formatted success
 			}
 	});
 })
@@ -126,14 +120,10 @@ router.post('/delete/:DISHID', function(req, res) {
 						callback('error');
 					else {
 						if (typeof row !== 'undefined' && row.length > 0)
-					  	result = true; // the array is defined and has at least one element
+					  	callback(null, result);
 						else
-							result = false;
+							callback('not exist');
 					}
-					if(result)
-						callback(null, result);
-					else
-						callback('not exist');
 				});
 			},
 			function(callback){
@@ -156,7 +146,7 @@ router.post('/delete/:DISHID', function(req, res) {
 						if (err)
 							callback('error');
 						else
-							callback(null, 'ok'); // TO DO : we can change to json-formatted success
+							callback(null, 'ok'); // TODO : we can change to json-formatted success
 					});
 				}
 			}
@@ -168,7 +158,7 @@ router.post('/delete/:DISHID', function(req, res) {
 						res.json(400, util.showError('unexpected error'));
 				}
 				else {
-					res.send(200, 'ok'); // TO DO : we can change to json-formatted success
+					res.send(200, 'ok'); // TODO : we can change to json-formatted success
 				}
 		});
 	}

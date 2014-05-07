@@ -30,6 +30,7 @@ exports.restaurants_rules = {
 		},
 		{
 			'rule': 'between',
+			'args': [-180, 180],
 			'error': 'must be between -180 < x < 180'
 		}
 	],
@@ -44,6 +45,7 @@ exports.restaurants_rules = {
 		},
 		{
 			'rule': 'between',
+			'args': [-90, 90],
 			'error': 'must be between -90 < x < 90'
 		}
 	],
@@ -75,7 +77,7 @@ exports.dishes_rules = {
 		},
 		{
 			'rule': 'int',
-			'error' 'ID has to be an integer'
+			'error': 'ID has to be an integer'
 		}
 	],
 	'name': [
@@ -108,7 +110,7 @@ exports.invitations_rules = {
 		},
 		{
 			'rule': 'int',
-			'error' 'ID has to be an integer'
+			'error': 'ID has to be an integer'
 		}
 	],
 	'request_date': [
@@ -170,7 +172,28 @@ exports.invitation_dishes_rules = {
 	]
 };
 
-exports.accounts_rules = {
+exports.account_signup_rules = {
+	'phoneno': [
+		{
+			'rule': 'required',
+			'error': 'Missing Phone No'
+		}
+	],
+	'password': [
+		{
+			'rule': 'required',
+			'error': 'Missing Password'
+		}
+	],
+	'name': [
+		{
+			'rule': 'required',
+			'error': 'Missing Name'
+		}
+	]
+};
+
+exports.account_signin_rules = {
 	'phoneno': [
 		{
 			'rule': 'required',
