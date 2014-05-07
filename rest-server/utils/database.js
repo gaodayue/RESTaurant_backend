@@ -2,8 +2,8 @@ var mysql      = require('mysql');
 var async = require('async');
 var c = mysql.createConnection({
   host     : 'localhost',
-  user     : 'bjtu',
-  password : 'bjtu',
+  user     : 'root',
+  password : 'root',
   database : 'restaurant'
 }); // local
 /*var c = mysql.createConnection({

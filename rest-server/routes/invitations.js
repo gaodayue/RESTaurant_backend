@@ -25,6 +25,9 @@ router.get('/', function(req, res) {
 						if(typeof result !== 'undefined' && result.length > 0){
 							callback(null, result);
 						}
+						else {
+							callback('not exist');
+						}
 					}
 				});
 			}
@@ -32,6 +35,8 @@ router.get('/', function(req, res) {
 				if(err){
 					if(err === 'error')
 						res.json(400, util.showError('unexpected error'));
+					else if(err === 'not exist')
+						res.json(400, util.showError('invitation does not exist yet'));
 					else
 						res.json(400, err);
 				}
@@ -150,7 +155,7 @@ router.get('/:INVID', function(req, res) {
 				if(err === 'error')
 					res.json(400, util.showError('unexpected error'));
 				else if(err === 'not exist')
-					res.json(400, util.showError('not exist'));
+					res.json(400, util.showError('something not exist yet'));
 				else
 					res.json(400, util.showError(err))
 			}
@@ -373,7 +378,7 @@ router.post('/create', function(req, res) {
 router.post('/accept/:INVID', function(req, res) {
 	var query;
 	var invitationId = req.params.INVID;
-	var custId = req.body.cust_id;
+	var custId = req.body.customer_id;
 	if(!custId)
   	res.json(400, util.showError('missing customer ID'));
   else {
@@ -503,7 +508,7 @@ router.post('/accept/:INVID', function(req, res) {
 router.post('/deny/:INVID', function(req, res) {
 	var query;
 	var invitationId = req.params.INVID;
-	var custId = req.body.cust_id;
+	var custId = req.body.customer_id;
 	if(!custId)
   	res.json(400, util.showError('missing customer ID'));
   else {
