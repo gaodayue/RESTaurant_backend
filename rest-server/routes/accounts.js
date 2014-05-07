@@ -10,6 +10,34 @@ var express = require('express'),
     async = require('async'),
     uuid = require('node-uuid');
 
+router.get('/', function(req, res) {
+	var query;
+	async.waterfall([
+		function(callback){
+			query = connection.query('SELECT cust_id, cust_name as name, cust_phoneno as phoneno, cust_access_token as access_token FROM customer_accounts', function(err, result){
+				if(err)
+					callback('error');
+				else {
+					if(typeof result !== 'undefined' && result.length > 0){
+						callback(null, result);
+					}
+					else
+						callback('not exist');
+				}
+			});
+		}
+	], function(err, result){
+			if(err){
+				if(err === 'error')
+					res.json(400, util.showError('unexpected error'));
+				else if(err === 'not exist')
+					res.json(400, util.showError('no account exist yet'));
+			}
+			else
+				res.json(200, result);
+	});
+});
+
 router.post('/signup', function(req, res) {
   var account = req.body;
   var query;

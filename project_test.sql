@@ -1,8 +1,8 @@
-CREATE DATABASE  IF NOT EXISTS `project` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `project`;
+CREATE DATABASE  IF NOT EXISTS `restaurant` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `restaurant`;
 -- MySQL dump 10.13  Distrib 5.6.13, for osx10.6 (i386)
 --
--- Host: localhost    Database: project
+-- Host: localhost    Database: restaurant
 -- ------------------------------------------------------
 -- Server version	5.6.17
 

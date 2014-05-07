@@ -3,21 +3,13 @@ exports.restaurants_rules = {
 		{
 			'rule': 'required',
 			'error': 'Missing Restaurant Name'
-		},
-		{
-    	'rule': 'alphaNumeric',
-    	'error': 'Must be names and numbers'
-  	}
+		}
 	],
 	'r_addr': [
 		{
 			'rule': 'required',
 			'error': 'Missing Restaurant Address'
-		},
-		{
-    	'rule': 'alphaNumeric',
-    	'error': 'Must be names and numbers'
-  	}
+		}
 	],
 	'r_longitude': [
 		{
@@ -25,13 +17,13 @@ exports.restaurants_rules = {
 			'error': 'Missing Restaurant Longitude'
 		},
 		{
-			'rule': 'decimal',
-			'error': 'Must be a number'
+			'rule': 'number',
+			'error': 'Restaurant longitude must be a number'
 		},
 		{
 			'rule': 'between',
 			'args': [-180, 180],
-			'error': 'must be between -180 < x < 180'
+			'error': 'Longitude must be between -180 < x < 180'
 		}
 	],
 	'r_latitude': [
@@ -40,13 +32,13 @@ exports.restaurants_rules = {
 			'error': 'Missing Restaurant Latitude'
 		},
 		{
-			'rule': 'decimal',
-			'error': 'Must be a number'
+			'rule': 'number',
+			'error': 'Restaurant latitude must be a number'
 		},
 		{
 			'rule': 'between',
 			'args': [-90, 90],
-			'error': 'must be between -90 < x < 90'
+			'error': 'Latitude must be between -90 < x < 90'
 		}
 	],
 	'r_pic': [
@@ -73,21 +65,17 @@ exports.dishes_rules = {
 	'r_id': [
 		{
 			'rule': 'required',
-			'error': 'Missing Restaurant ID'
+			'error': 'Missing Dish ID'
 		},
 		{
 			'rule': 'int',
-			'error': 'ID has to be an integer'
+			'error': 'Dish ID has to be an integer'
 		}
 	],
 	'name': [
 		{
 			'rule': 'required',
 			'error': 'Missing Dish Name'
-		},
-		{
-			'rule': 'alphaNumeric',
-			'error': 'Must be names and/or number'
 		}
 	],
 	'price': [
@@ -96,8 +84,8 @@ exports.dishes_rules = {
 			'error': 'Missing Dish Price'
 		},
 		{
-			'rule': 'decimal',
-			'error': 'Must be a number'
+			'rule': 'number',
+			'error': 'Dist price must be a number'
 		}
 	]
 };
@@ -106,11 +94,11 @@ exports.invitations_rules = {
 	'restaurant_id': [
 		{
 			'rule': 'required',
-			'error': 'Missing Restaurant ID'
+			'error': 'Missing Invitation ID'
 		},
 		{
 			'rule': 'int',
-			'error': 'ID has to be an integer'
+			'error': 'Invitation ID has to be an integer'
 		}
 	],
 	'request_date': [
@@ -144,10 +132,6 @@ exports.invitation_dishes_rules = {
 		{
 			'rule': 'required',
 			'error': 'Missing Dish Name'
-		},
-		{
-			'rule': 'alphaNumeric',
-			'error': 'Must be a name and/or number'
 		}
 	],
 	'price': [
@@ -156,8 +140,8 @@ exports.invitation_dishes_rules = {
 			'error': 'Missing Dish Price'
 		},
 		{
-			'rule': 'decimal',
-			'error': 'Must be a number'
+			'rule': 'number',
+			'error': 'Dish Price must be a number'
 		}
 	],
 	'quantity': [
@@ -166,8 +150,8 @@ exports.invitation_dishes_rules = {
 			'error': 'Missing Dish Quantity'
 		},
 		{
-			'rule': 'decimal',
-			'error': 'Must be a number'
+			'rule': 'number',
+			'error': 'Dish quantity must be a number'
 		}
 	]
 };
@@ -177,6 +161,10 @@ exports.account_signup_rules = {
 		{
 			'rule': 'required',
 			'error': 'Missing Phone No'
+		},
+		{
+			'rule': 'number',
+			'error': 'Phone number must be number'
 		}
 	],
 	'password': [
@@ -198,6 +186,10 @@ exports.account_signin_rules = {
 		{
 			'rule': 'required',
 			'error': 'Missing Phone No'
+		},
+		{
+			'rule': 'number',
+			'error': 'Phone number must be number'
 		}
 	],
 	'password': [

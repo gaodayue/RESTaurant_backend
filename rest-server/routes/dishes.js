@@ -6,7 +6,8 @@ var express = require('express'),
     validationRules = require('../utils/validation_rules'),
     util = require('../utils/util'),
     db = require('../utils/database'),
-    connection = db.connection();
+    connection = db.connection(),
+    async = require('async');
 
 router.post('/create', function(req, res) {
 	var dishes = req.body;
