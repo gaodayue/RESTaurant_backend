@@ -11,7 +11,7 @@ var express = require('express'),
 
 router.get('/', function(req, res) {
 	var query;
-  var custId = req.param('cust_id');
+  var custId = req.param('customer_id');
   if(!custId)
   	res.json(400, util.showError('missing customer ID'));
   else {
