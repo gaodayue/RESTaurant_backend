@@ -1,0 +1,18 @@
+<h2>Joined Restaurants</h2>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Name</th>
+      <th>Address</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr data-ng-repeat="restaurant in restaurants">
+      <td>{{ restaurant.rest_id }}</td>
+      <td><a href="#/restaurant/{{restaurant.rest_id}}">{{ restaurant.name }}</a></td>
+      <td>{{ restaurant.address }}</td>
+    </tr>
+  </tbody>
+</table>
+<a href="">Add</a>
