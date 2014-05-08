@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>RESTaurant Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="content/bootstrap.css">
+  <link rel="stylesheet" href="css/datepicker.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="http://cdn.bootcss.com/html5shiv/3.7.0/html5shiv.min.js"></script>
+        <script src="http://cdn.bootcss.com/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+</head>
+<body>
+  <style type="text/css">
+  .tdd {background-color: #47A447}
+  .tdd2 {background-color: #ED9C28}
+  .tdd3 {background-color: #F2DEDE}
+  </style>
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="scripts/jquery-1.11.1.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="scripts/bootstrap.min.js"></script>
+  <script src="scripts/bootstrap-datepicker.js"></script>
+
+  <!-- Nav begin -->
+  <nav class="navbar navbar-default" role="navigation">
+   <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Resturant</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Schedule</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            Manage <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="#">Tables</a></li>
+              <li class="divider"></li>
+              <li><a href="#">Menus</a></li>
+            </ul>
+          </li>
+        </ul>
+        <div class="navbar-form navbar-right">
+          <button type="submit" class="btn btn-primary">logout</button>
+        </div>
+
+      </div><!-- /.navbar-collapse -->
+    </div>
+  </nav>
+
+  <!-- Main content begin -->
+  <div class="container">
+    <div class="jumbotron"> 
+      <form class="navbar-form" style="text-align:center" role="form">
+
+        <div class="form-group">
+          <input type="text" id="datetimepicker" placeholder="2014.05.01" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-success">Search</button>
+      </form>
+
+
+      <table class="table table-condensed">
+
+        <script type="text/javascript">
+document.write("<tr>");
+document.write("<td width=60>编号</td>");
+for(var i = 11; i < 24; i++)
+  document.write("<th width=60>" + i + ":00</th>");
+document.write("</tr>");
+for(var i = 0; i < 8; i++){
+  document.write("<tr class='tdd3'>")
+  document.write("<td>" + (i+1) + "</td>");
+  for(var j = 11; j < 24; j++){
+    document.write("<td id='" + (i*100+j) + "'>&nbsp;</td>");
+  }
+  document.write("</tr>");
+}
+
+var test = [ [0, 1, "高大月", 13, 14], [0, 1, "sunhao", 12, 13], [0,2, "gdy", 14,15], [0, 3, "pol", 15, 16], [0, 3, "pol", 16, 17], [0, 4, "pol", 17, 18], [0,1,"小开", 20, 21], [3, 1, "风唱红", 17, 18]];
+
+for (var i = 0; i < test.length; i++) {
+  for(var j = 11; j < 24; j++){
+    var obj = document.getElementById(test[i][0] * 100 + j);
+    if(test[i][3] <= j && test[i][4] > j){
+      //obj.className = "tdd";
+      obj.abbr = test[i][1];
+      obj.innerText = test[i][2];
+    }
+
+    if(j > 11 && obj.abbr == document.getElementById(test[i][0] * 100 + j-1).abbr){
+      obj.innerText = "";
+      obj.style = "border-left: none";
+    }              
+
+    if(j < 23 && document.getElementById(test[i][0] * 100 + j + 1).abbr == obj.abbr)
+      document.getElementById(test[i][0] * 100 + j+1).innerText = "";
+  }
+}
+
+//for(var i = 11; i < 24; i++)
+//document.write("<th width=70>" + i + "</th>");
+//document.write("</tr>");
+for (var i = 0; i < 8; i++) {
+  //document.write("<tr class='tdd'>")
+  //var check = true;
+  for(var j = 11; j < 23; j++){
+    var obj = document.getElementById(i*100+j);
+    var obj2 = document.getElementById(i*100+j+1);
+
+    if(obj.abbr == "")
+      continue;
+
+    if(j>11 && document.getElementById(i*100+j-1).abbr == ""){
+      obj.className = "tdd";
+    }
+    if(obj.abbr == obj2.abbr)
+      obj2.className = obj.className;
+    else if(obj2.abbr != ""){
+      if(obj.className == "tdd")
+        obj2.className = "tdd2";
+      else
+        obj2.className = "tdd";
+    }
+  }
+}</script>
+      </table>
+
+      <ul class="pager btn-sm">
+        <li class="previous"><a href="#">&larr; Pre</a></li>
+        <li class="next"><a href="#">Next &rarr;</a></li>
+      </ul>
+
+    </div>
+  </div>
+  
+</body>
+</html>
+
+
+
+
+
+

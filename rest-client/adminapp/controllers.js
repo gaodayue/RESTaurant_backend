@@ -11,6 +11,10 @@ adminApp.controller('RestaurantListController', function ($scope, $http) {
   });
 });
 
+adminApp.controller('RestaurantAddController', function ($scope, $http) {
+  
+});
+
 adminApp.controller('RestaurantDetailController', function ($scope, $routeParams, $http) {
   $scope.restaurant = mydata[$routeParams.rest_id];
 });
