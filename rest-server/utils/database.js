@@ -5,13 +5,7 @@ var c = mysql.createConnection({
   user     : 'bjtu',
   password : 'bjtu',
   database : 'restaurant'
-}); // local
-/*var c = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'bjtu',
-  password : 'bjtu',
-  database : 'restaurant'
-});*/
+});
 
 /*connection.on('error', function(err) {
   console.log(err.code); // example : 'ER_BAD_DB_ERROR'

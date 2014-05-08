@@ -310,8 +310,12 @@ router.post('/create', function(req, res) {
 			query = connection.query('SELECT inv_id FROM invitations ORDER BY inv_created_time DESC LIMIT 1', function(err, result){
 				if(err)
 					callback('error');
-				else
-					callback(null, arg1, (result[0].inv_id)+1);
+				else{
+					if(typeof result !== 'undefined' && result.length > 0)
+						callback(null, arg1, (result[0].inv_id)+1);
+					else
+						callback(null, arg1, 1); // default 1 if no current invitations exist
+				}
 			});
 		},
 		function(arg1, arg2, callback){ // arg1:order, arg2:last_invitation_id
@@ -319,13 +323,17 @@ router.post('/create', function(req, res) {
 			var data = [];
 			for(var i in invitation.customer_ids){ // creating array for bulk insert
 				// inv_id, inv_cust_id, inv_order_id, inv_is_host, inv_status
-				var a = [arg2, invitation.customer_ids[i], arg1.o_id, (invitation.customer_ids[i] == invitation.customer_id), 's'];
+				var isHost = (invitation.customer_ids[i] == invitation.customer_id) ? 'true' : 'false';
+				var a = [arg2, invitation.customer_ids[i], arg1.o_id, isHost , 's'];
 				data.push(a);
 			}
+			console.log(data);
 			// insert to database
 			query = connection.query('INSERT INTO invitations (inv_id, inv_cust_id, inv_order_id, inv_is_host, inv_status) VALUES ?', [data], function(err, result) {
-				if (err)
+				if (err){
+					console.log(err);
 					callback('error');
+				}
 				else
 					callback(null, arg1, arg2);
 			});

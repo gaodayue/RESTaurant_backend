@@ -2,7 +2,7 @@ path = require('path');
 
 module.exports = {
   server: {
-    listenPort: 8888,
+    listenPort: 80,
     distFolder: path.resolve(__dirname, '../rest-client')
   }
 };
