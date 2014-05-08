@@ -1,5 +1,3 @@
-// DANGEROUS, UNTESTED BAD CODE BELOW
-
 var express = require('express'),
     router = express.Router(),
     iz = require('iz'),
@@ -86,6 +84,7 @@ router.get('/:RESTID', function (req, res) {
 });
 
 router.post('/create', function(req, res, next) {
+  // TODO : need transaction implemented
   var query;
   var restaurant = req.body;
   var post = {
@@ -128,11 +127,9 @@ router.post('/create', function(req, res, next) {
           geo = null;
         pic = restaurant.r_pic ? restaurant.r_pic : null;
         var data = {
-          //'rest_id' : 1,
           'rest_owner_id' : arg1,
           'rest_name' : post.r_name,
           'rest_address' : post.r_addr,
-          //'rest_geo_location' : geo,
           'rest_pic' : pic
         };
         // insert to database
