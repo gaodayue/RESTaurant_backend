@@ -84,7 +84,7 @@ router.get('/:RESTID', function (req, res) {
 });
 
 router.post('/create', function(req, res, next) {
-  // TODO : need transaction implemented
+  // TODO : need transaction optimized (now 700++ ms);
   var query;
   var restaurant = req.body;
   var post = {
@@ -104,7 +104,7 @@ router.post('/create', function(req, res, next) {
     res.json(400, util.showError(errorMessage));
   }
   else {
-    async.waterfall([
+    /*async.waterfall([
       function(callback){
         var geo, pic, raId;
         // create RESTAURANT_ACCOUNT and then get the raId
@@ -149,41 +149,82 @@ router.post('/create', function(req, res, next) {
       }
       else
         res.json(200, 'ok')
+    });*/
+    connection.beginTransaction(function(err) {
+      if (err)
+        res.json(400, util.showError('unexpected error'));
+      else {
+        var ra = {
+          'ra_name' : post.r_mgr_name,
+          'ra_password' : util.createHash(post.r_mgr_pwd)
+        };
+        connection.query('INSERT INTO restaurant_accounts SET ?', ra, function(err, result) {
+          if (err) { 
+            connection.rollback(function() {
+              res.json(400, util.showError('unexpected error'));
+            });
+          }
+          else {
+            pic = post.r_pic ? post.r_pic : null;
+            var data = {
+              'rest_owner_id' : result.insertId,
+              'rest_name' : post.r_name,
+              'rest_address' : post.r_addr,
+              'rest_pic' : pic
+            };
+            connection.query('INSERT INTO restaurants SET rest_geo_location = GeomFromText(?), ?', ['POINT('+post.r_longitude+' '+post.r_latitude+')',data], function(err, result) {
+              if (err) { 
+                connection.rollback(function() {
+                  res.json(400, util.showError('unexpected error'));
+                });
+              }  
+              else {
+                connection.commit(function(err) {
+                  if (err) { 
+                    connection.rollback(function() {
+                      res.json(400, util.showError('unexpected error'));
+                    });
+                  }
+                  else {
+                    console.log('success!');
+                    res.json(200, 'ok');
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
     });
-  }
+  } // end else
 });
 
 router.post('/update/:RESTID', function(req, res) {
   var restaurant = req.body;
   var restaurantId = req.params.RESTID;
 
-  async.series([
-    function(callback) {
-      var result;
-      var query = connection.query('SELECT rest_id FROM restaurants WHERE rest_id = ?', restaurantId, function(err, row){
+  async.waterfall([
+    function (callback) {
+      var query = connection.query('SELECT * FROM restaurants WHERE rest_id = ? LIMIT 1', restaurantId, function(err, result){
         if(err)
           callback('error');
         else {
-          if (typeof row !== 'undefined' && row.length > 0)
-            result = true; // the array is defined and has at least one element
+          if (typeof result !== 'undefined' && result.length > 0)
+            callback(null, result[0]);
           else
-            result = false;
+            callback('not exist');
         }
-        if(result)
-          callback(null, result);
-        else
-          callback('not exist');
       });
     },
-    function(callback) {
+    function (arg1, callback) { // arg1: restaurant
       var post = {
-        'r_name' : restaurant.r_name,
-        'r_addr' : restaurant.r_addr,
-        'r_longitude' : restaurant.r_longitude,
-        'r_latitude' : restaurant.r_latitude,
-        'r_pic' : restaurant.r_pic,
-        'r_mgr_name' : restaurant.r_mgr_name,
-        'r_mgr_pwd' : restaurant.r_mgr_pwd
+        'r_name' : restaurant.r_name ? restaurant.r_name : arg1.rest_name,
+        'r_addr' : restaurant.r_addr ? restaurant.r_addr : arg1.rest_address,
+        'r_longitude' : restaurant.r_longitude ? restaurant.r_longitude : arg1.rest_geo_location.x,
+        'r_latitude' : restaurant.r_latitude ? restaurant.r_latitude : arg1.rest_geo_location.y,
+        'r_pic' : restaurant.r_pic ? restaurant.r_pic : arg1.rest_pic,
+        'r_mgr_name' : 'foo',//restaurant.r_mgr_name,
+        'r_mgr_pwd' : 'bar'//restaurant.r_mgr_pwd
       };
       // validate input first
       var rules = are(validationRules.restaurants_rules);
@@ -193,22 +234,16 @@ router.post('/update/:RESTID', function(req, res) {
         res.json(400, util.showError(errorMessage));
       }
       else {
-        var geo, pic;
-        if (restaurant.r_longitude && restaurant.r_latitude)
-          geo = 'GeomFromText("POINT('+restaurant.r_longitude+' '+restaurant.r_latitude+')")';
-        else
-          geo=null;
-        pic = restaurant.r_pic ? restaurant.r_pic : null;
+        var pic = post.r_pic ? post.r_pic : null;
         var data = {
-          'rest_id' : 1,
-          'rest_owner_id' : 1,
+          'rest_id' : restaurantId,
           'rest_name' : post.r_name,
           'rest_address' : post.r_addr,
-          //'rest_geo_location' : geo,
           'rest_pic' : pic
         };
         // update to database
-        var query = connection.query('UPDATE restaurants SET rest_geo_location = GeomFromText(?), ? WHERE rest_id = ?', ['POINT('+restaurant.r_longitude+' '+restaurant.r_latitude+')',data, restaurantId], function(err, result) {
+        var sql = 'UPDATE restaurants SET rest_geo_location = GeomFromText(?), ? WHERE rest_id = ?';
+        var query = connection.query(sql, ['POINT('+post.r_longitude+' '+post.r_latitude+')', data, restaurantId], function(err, result) {
           if (err) {
             callback('error');
           }
@@ -218,7 +253,7 @@ router.post('/update/:RESTID', function(req, res) {
         });
       }
     }
-  ], function(err, result){
+  ], function (err, result){
       if(err){
         if (err == 'not exist')
           res.json(400, util.showError('Restaurant does not exist'));
