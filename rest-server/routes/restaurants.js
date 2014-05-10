@@ -15,7 +15,7 @@ router.get('/nearby', function(req, res) {
   async.waterfall([
     function(callback){
       var sql = 'SELECT rest_id, rest_name AS name, rest_address AS address, rest_geo_location AS geo_location, '+
-                'rest_pic AS pic, ra_id AS mgr_id, ra_name AS mgr_name '+
+                'rest_pic AS pic, rest_pic_thumb AS pic_thumb, ra_id AS mgr_id, ra_name AS mgr_name '+
                 'FROM restaurants, restaurant_accounts '+
                 'WHERE rest_owner_id = ra_id';
       query = connection.query(sql, function(err, result){
@@ -82,6 +82,7 @@ router.get('/show/:RESTID', function(req, res) {
                 'latitude' : arg1.rest_geo_location.y
               },
               'pic' : arg1.rest_pic,
+              'pic_thumb' : arg1.rest_pic_thumb,
               'dishes' : dishRow
             };
             callback(null, data);

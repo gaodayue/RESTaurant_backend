@@ -29,9 +29,9 @@ router.get('/', function(req, res) {
   ], function(err, result){
       if(err){
         if(err === 'error')
-          res.json(400, util.showError('unexpected error'));
+          res.json(500, util.showError('unexpected error'));
         else if(err === 'not exist')
-          res.json(400, util.showError('no account exist yet'));
+          res.json(500, util.showError('no account exist yet'));
       }
       else
         res.json(200, result);
@@ -60,7 +60,8 @@ router.post('/signup', function(req, res) {
         };
         query = connection.query('INSERT INTO customer_accounts SET ?', post, function(err, result){
           if(err){
-            callback('error');
+            if(err.code === 'ER_DUP_ENTRY') callback('duplicate');
+            else callback('error');
           }
           else{
             custId = result.insertId;
@@ -77,8 +78,10 @@ router.post('/signup', function(req, res) {
         callback(null, data);
       }
     ], function(err, result){
-      if(err)
-        res.json(400, util.showError('unexpected error'));
+      if(err){
+        if(err === 'duplicate') res.json(400, util.showError('duplicate phoneno!'));
+        else res.json(500, util.showError('unexpected error'));
+      }
       res.json(200, result);
     });
   }
@@ -130,7 +133,7 @@ router.post('/signin', function(req, res) {
           res.json(400, util.showError('invalid username/password'));
         }
         else {
-          res.json(400, util.showError('unexpected error'));
+          res.json(500, util.showError('unexpected error'));
         }
       }
       res.json(200, result);

@@ -33,7 +33,7 @@ CREATE TABLE `customer_accounts` (
   `cust_joined_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`cust_id`),
   UNIQUE KEY `cust_phoneno_UNIQUE` (`cust_phoneno`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -59,7 +59,7 @@ CREATE TABLE `dining_tables` (
   `tbl_capacity` int(11) NOT NULL,
   `tbl_display_order` int(11) NOT NULL,
   PRIMARY KEY (`tbl_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -68,6 +68,7 @@ CREATE TABLE `dining_tables` (
 
 LOCK TABLES `dining_tables` WRITE;
 /*!40000 ALTER TABLE `dining_tables` DISABLE KEYS */;
+INSERT INTO `dining_tables` VALUES (4,2,2,0),(5,2,2,0),(6,2,2,0),(7,2,2,0),(8,2,2,0),(10,1,10,0);
 /*!40000 ALTER TABLE `dining_tables` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -94,7 +95,7 @@ CREATE TABLE `dishes` (
 
 LOCK TABLES `dishes` WRITE;
 /*!40000 ALTER TABLE `dishes` DISABLE KEYS */;
-INSERT INTO `dishes` VALUES (1,1,'bigmac',20.00,0),(2,1,'mcspicy',15.00,0),(3,2,'small pizza',5.00,0),(4,2,'medium pizza',10.00,0),(5,2,'large pizza',15.00,0);
+INSERT INTO `dishes` VALUES (1,1,'bigbigmac',100.00,0),(2,1,'mcspicy',15.00,0),(3,2,'small pizza',5.00,0),(4,2,'medium pizza',10.00,0),(5,2,'large pizza',15.00,0);
 /*!40000 ALTER TABLE `dishes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -196,7 +197,7 @@ CREATE TABLE `restaurant_accounts` (
   `ra_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `ra_access_token` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`ra_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -205,7 +206,7 @@ CREATE TABLE `restaurant_accounts` (
 
 LOCK TABLES `restaurant_accounts` WRITE;
 /*!40000 ALTER TABLE `restaurant_accounts` DISABLE KEYS */;
-INSERT INTO `restaurant_accounts` VALUES (1,'mcd','GoGlQJJfA05TVPMqQ7ylIjcWk4DUWGkdHmycQ1Mdj51uqZKIgdREgFngaAiOPhOZfCR3fuIe163lZUz4v3KENfmCLQgOeAer1CqmTagluIuBIDco8fuv1pE1adaqYQ3c78xrNCH+57/kup7o8E6N1jHGgDMUZsGRff0aLwLCGDMlla9jv+Iu7pCop+WIVjkGKY5B7DGccTFsBDKs6xDGhjAQD7MncAU2dbg9ehNcDnqMo3gp0FvWh6C0dSMdprhqsnR5h0fdeSgQK2UDMM1uc81oho5lbOavLvejX/vGFn+322pp2Fr2mz8tKi60CUjUTvP+GxAuLazH9DOK+zJh2Q==:dlyn0pX1d74sYNAk2qUOZCXyq0ZX+zLW5vSEaec2aoSG4G5SSnb5U57bTzABnmwS8A2eLIvxC/lg1b0MFHkD6va/JPf7LNKBhU5MeDz90uczRm4laaH22xtH9+pFda7ztsiHxsqqcNubiuUxp6cw8dFHd8J0IgGI4J77t3bbno4=','2014-05-07 15:35:12',NULL),(2,'pizza1','RRxzXwbR7bNiXHm0wxRG46/RRaUNJZQVNEI+4Sv44C2Dq9RIqPI9eFhon3gKmqnhQkQzUy/gN+uS60pxXPp1a8//mzCP+ufNKxv1XgIIkUf1yILBWvdjE2neP/+KIPjp25sMN2ZAFGIdWrUdENz/bcuQyvGHGA4hv/gNEyBMVGuNluaYJpNypYPKMk2AwG3/wrtNr2tjtTh5tQBAuKSvv5kV7XMvXdNaZjbWS8BErHnhHO5s6sj/p+TrVK5g0vw9FxbQWv7P8sWftKm4oXtf3dXWHKRcS+OWi/bMS1o7JbiK3OlzxEUS9xPPWEQ+MW6nKPy050hCFYLCudhfyv52kg==:JaEXtUErqI013PDJWyOM/BKcHYg5sGDI6ERl6oypsM4eOzQUy4gfBl85rV+cUkBdjQNtWP5LDu49yxIMuCyGCzH7SzW3zPYXPqYDkmkg9W7KWmD5VBUygWEiui4h7LwIw7wGarbQzNsF36YXaK29nvepbDsty57wo4NX2XwTycM=','2014-05-07 15:36:17',NULL);
+INSERT INTO `restaurant_accounts` VALUES (1,'mcd','GoGlQJJfA05TVPMqQ7ylIjcWk4DUWGkdHmycQ1Mdj51uqZKIgdREgFngaAiOPhOZfCR3fuIe163lZUz4v3KENfmCLQgOeAer1CqmTagluIuBIDco8fuv1pE1adaqYQ3c78xrNCH+57/kup7o8E6N1jHGgDMUZsGRff0aLwLCGDMlla9jv+Iu7pCop+WIVjkGKY5B7DGccTFsBDKs6xDGhjAQD7MncAU2dbg9ehNcDnqMo3gp0FvWh6C0dSMdprhqsnR5h0fdeSgQK2UDMM1uc81oho5lbOavLvejX/vGFn+322pp2Fr2mz8tKi60CUjUTvP+GxAuLazH9DOK+zJh2Q==:dlyn0pX1d74sYNAk2qUOZCXyq0ZX+zLW5vSEaec2aoSG4G5SSnb5U57bTzABnmwS8A2eLIvxC/lg1b0MFHkD6va/JPf7LNKBhU5MeDz90uczRm4laaH22xtH9+pFda7ztsiHxsqqcNubiuUxp6cw8dFHd8J0IgGI4J77t3bbno4=','2014-05-07 15:35:12',NULL),(2,'pizza1','RRxzXwbR7bNiXHm0wxRG46/RRaUNJZQVNEI+4Sv44C2Dq9RIqPI9eFhon3gKmqnhQkQzUy/gN+uS60pxXPp1a8//mzCP+ufNKxv1XgIIkUf1yILBWvdjE2neP/+KIPjp25sMN2ZAFGIdWrUdENz/bcuQyvGHGA4hv/gNEyBMVGuNluaYJpNypYPKMk2AwG3/wrtNr2tjtTh5tQBAuKSvv5kV7XMvXdNaZjbWS8BErHnhHO5s6sj/p+TrVK5g0vw9FxbQWv7P8sWftKm4oXtf3dXWHKRcS+OWi/bMS1o7JbiK3OlzxEUS9xPPWEQ+MW6nKPy050hCFYLCudhfyv52kg==:JaEXtUErqI013PDJWyOM/BKcHYg5sGDI6ERl6oypsM4eOzQUy4gfBl85rV+cUkBdjQNtWP5LDu49yxIMuCyGCzH7SzW3zPYXPqYDkmkg9W7KWmD5VBUygWEiui4h7LwIw7wGarbQzNsF36YXaK29nvepbDsty57wo4NX2XwTycM=','2014-05-07 15:36:17',NULL),(5,'kfc','pAITCEaGlD1toWrTLk59JfpitpqX83gTd9bNUiz+S3BMpkOd+U2bCRWFM5QMf8xHjyVX4ymPdEPugLnfegKkBMpozH8HRQV7ZoAYkkmxdfAIYnsS9WK2jJ1dzhG5pg78V5RL0cSpYin0bhPYRVdfy9IEyYbZcQk/hGGkAd7451z//8SbNLvDNzaJr0PNKFm788FJKcca6aJGTKYfndWPd/udTapX9TV6kAuaPPL0u09YCJFROQ/N949vZfPNhskHCHsGR2PsqgJBXIt0bkFUqu/PV4dkO+uycYjdiAdexP0G2ueAkLanNjkKFGbFcoxQN+01/w8s7vP9D7q/1up20Q==:PBta4GuBhxOlPGAtcxbVMCluc/OeSsS3jnjols6ntgjx+YDItpZzhh/9dvgjYbQmLxFXogPDf5ft5QeVj3ozM+htbWJBfHYlQAN8CcJz4VPP8SLxECGkReFuvvU9dsIIRPfkuXwRB9rwuLx35YqBZR7fLHi5nDB85F/6SxKP+Ls=','2014-05-08 09:50:31',NULL);
 /*!40000 ALTER TABLE `restaurant_accounts` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -223,8 +224,9 @@ CREATE TABLE `restaurants` (
   `rest_address` varchar(255) NOT NULL,
   `rest_geo_location` point DEFAULT NULL,
   `rest_pic` varchar(255) DEFAULT NULL,
+  `rest_pic_thumb` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`rest_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -233,7 +235,7 @@ CREATE TABLE `restaurants` (
 
 LOCK TABLES `restaurants` WRITE;
 /*!40000 ALTER TABLE `restaurants` DISABLE KEYS */;
-INSERT INTO `restaurants` VALUES (1,1,'McDonald','xx street xxx','\0\0\0\0\0\0\0\0\0\0\0\0\0$@\0\0\0\0\0\0$@','custom.pic'),(2,2,'Good Pizza','someplace nearby','\0\0\0\0\0\0\0\0\0\0\0\0\0/@ÍÌÌÌÌL8@','custom.pic.here');
+INSERT INTO `restaurants` VALUES (1,1,'McDonald','xx street xxx','\0\0\0\0\0\0\0\0\0\0\0\0\0$@\0\0\0\0\0\0$@',NULL,NULL),(2,2,'pizza shop','someplace nearby','\0\0\0\0\0\0\0\0\0\0\0\0\0/@ÍÌÌÌÌL8@',NULL,NULL),(4,5,'kfc','kfc land','\0\0\0\0\0\0\0®Gáz®ó?®Gáz®	@',NULL,NULL);
 /*!40000 ALTER TABLE `restaurants` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -275,4 +277,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-05-07 23:57:54
+-- Dump completed on 2014-05-10 16:35:55

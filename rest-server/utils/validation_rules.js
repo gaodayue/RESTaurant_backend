@@ -41,12 +41,6 @@ exports.restaurants_rules = {
 			'error': 'Latitude must be between -90 < x < 90'
 		}
 	],
-	'r_pic': [
-		{
-			'rule': 'required',
-			'error': 'Missing Restaurant Picture'
-		}
-	],
 	'r_mgr_name': [
 		{
 			'rule': 'required',
@@ -165,12 +159,27 @@ exports.account_signup_rules = {
 		{
 			'rule': 'number',
 			'error': 'Phone number must be number'
+		},
+		{
+			'rule': 'minLength',
+			'args': [11],
+			'error': 'Phone number must be 11 digit'
+		},
+		{
+			'rule': 'maxLength',
+			'args': [11],
+			'error': 'Phone number must be 11 digit'
 		}
 	],
 	'password': [
 		{
 			'rule': 'required',
 			'error': 'Missing Password'
+		},
+		{
+			'rule': 'minLength',
+			'args': [4],
+			'error': 'Password minimal length is 4 character'
 		}
 	],
 	'name': [
@@ -190,12 +199,27 @@ exports.account_signin_rules = {
 		{
 			'rule': 'number',
 			'error': 'Phone number must be number'
+		},
+		{
+			'rule': 'minLength',
+			'args': [11],
+			'error': 'Phone number must be 11 digit'
+		},
+		{
+			'rule': 'maxLength',
+			'args': [11],
+			'error': 'Phone number must be 11 digit'
 		}
 	],
 	'password': [
 		{
 			'rule': 'required',
 			'error': 'Missing Password'
+		},
+		{
+			'rule': 'minLength',
+			'args': [4],
+			'error': 'Password minimal length is 4 character'
 		}
 	]
 };

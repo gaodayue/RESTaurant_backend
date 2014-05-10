@@ -17,6 +17,8 @@ var tables = require('./routes/diningtables');
 var app = express();
 
 app.use(express.static(config.server.distFolder));
+//app.use(express.static(__dirname + '/public'));
+app.use('/uploads', express.static(__dirname + "/uploads"));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
