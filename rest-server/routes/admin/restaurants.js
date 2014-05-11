@@ -15,6 +15,32 @@ var express = require('express'),
 
 // all routes in this file begins with "/admin/restaurants"
 
+router.get('/fill', function(req, res) { // this function only serve to fill restaurant from nearby.json file for first time data
+  connection.query('SELECT * FROM restaurants', function(err, result){
+    if(err) throw err;
+    if(util.isArrayNotEmpty(result))
+      res.json(500, util.showError('database already filled!'));
+    else{
+      var file = path.resolve(__dirname + '../../../nearby.json');
+      fs.readFile(file, 'utf8', function(err, data) {
+        if(err) throw err;
+        data = JSON.parse(data);
+        var sql = 'INSERT INTO restaurants (rest_google_id, rest_name, rest_address, rest_geo_location) VALUES';
+        for(var i in data){
+          var location = 'GeomFromText("POINT('+data[i].location.longitude+' '+data[i].location.latitude+')")';
+          var tmp = '"' + data[i].id + '","' + data[i].name + '","' + data[i].address + '",' + location;
+          sql += '(' + tmp + ')';
+          if (i != data.length-1) sql+=',';
+        }
+        connection.query(sql, function(err, result) {
+          if (err) throw err;
+          res.send('ok');
+        });
+      });
+    }
+  });
+});
+
 router.get('/', function(req, res) {
   var query;
   async.waterfall([

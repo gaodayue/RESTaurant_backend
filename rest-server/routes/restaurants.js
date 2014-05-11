@@ -7,12 +7,24 @@ var express = require('express'),
     util = require('../utils/util'),
     db = require('../utils/database'),
     connection = db.connection(),
-    async = require('async');
+    async = require('async'),
+    GooglePlaces = require('google-places');
+
+//var APIKEY = 'AIzaSyA8E3NtmVFzMBXUm3cPXASzAkN8GZ6MaiA'; // server-lock APIKEY
+var APIKEY = 'AIzaSyDaLZXakZw5zx3y8xpWQRtSBvJwMSw8ffM'; // browser apps
 
 router.get('/nearby', function(req, res) {
+  /** NOTES : everytime user fetch nearby thing, we would update
+    * the whole DB with INSERT IGNORE or INSERT .. on DUPLICATE KEY UPDATE (?)
+    * One place will have only one id and can have multiple references. >> Google Places Data
+    */ 
+  // siyuan building : [39.95158836249126,116.34070884788514]
+  var latitude = req.param('latitude'),
+      longitude = req.param('longitude'),
+      page = req.param('page_number');
   // temp solution
   var query;
-  async.waterfall([
+  /*async.waterfall([
     function(callback){
       var sql = 'SELECT rest_id, rest_name AS name, rest_address AS address, rest_geo_location AS geo_location, '+
                 'rest_pic AS pic, rest_pic_thumb AS pic_thumb, ra_id AS mgr_id, ra_name AS mgr_name '+
@@ -45,7 +57,33 @@ router.get('/nearby', function(req, res) {
       }
       else
         res.json(200, result);
+  });*/
+
+  // GOOGLE PLACES
+  var places = new GooglePlaces(APIKEY);
+  var options = {
+    //userIp: '118.193.54.222', // the cloud server ip address
+    location: [latitude, longitude],
+    radius: null, //meter - have to declare it null manually because the library always have default value
+    sensor: false, //, 
+    //language: 'en', //optional , zh-CN for Chinese Simplified
+    rankby: 'distance',
+    types: ['restaurant','food']
+    // pagetoken: '' // Returns the next 20 results from a previously run search
+  };
+  console.log(options);
+  places.search(options, function(err, response) {
+    if(err) throw err;
+    else res.json(response);
+    //console.log("search: ", response.results);
+
+    /*if(util.isArrayNotEmpty(response.results)) {
+      places.details({reference: response.results[0].reference}, function(err, response) {
+        console.log("search details: ", response.result);
+      });
+    }*/
   });
+
 });
 
 router.get('/show/:RESTID', function(req, res) {

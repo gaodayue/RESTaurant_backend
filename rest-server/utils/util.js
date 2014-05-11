@@ -31,3 +31,7 @@ exports.showError = function (errorMessage) {
 	};
 	return data;
 };
+
+exports.isArrayNotEmpty = function(array) {
+  return (typeof array !== 'undefined' && array.length > 0) ? true : false;
+};
