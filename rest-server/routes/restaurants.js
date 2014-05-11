@@ -22,9 +22,10 @@ router.get('/nearby', function(req, res) {
   var latitude = req.param('latitude'),
       longitude = req.param('longitude'),
       page = req.param('page_number');
+
   // temp solution
   var query;
-  /*async.waterfall([
+  async.waterfall([
     function(callback){
       var sql = 'SELECT rest_id, rest_name AS name, rest_address AS address, rest_geo_location AS geo_location, '+
                 'rest_pic AS pic, rest_pic_thumb AS pic_thumb, ra_id AS mgr_id, ra_name AS mgr_name '+
@@ -57,10 +58,10 @@ router.get('/nearby', function(req, res) {
       }
       else
         res.json(200, result);
-  });*/
+  }); // end of temp solution
 
   // GOOGLE PLACES
-  var places = new GooglePlaces(APIKEY);
+  /*var places = new GooglePlaces(APIKEY);
   var options = {
     //userIp: '118.193.54.222', // the cloud server ip address
     location: [latitude, longitude],
@@ -71,18 +72,16 @@ router.get('/nearby', function(req, res) {
     types: ['restaurant','food']
     // pagetoken: '' // Returns the next 20 results from a previously run search
   };
-  console.log(options);
   places.search(options, function(err, response) {
     if(err) throw err;
     else res.json(response);
-    //console.log("search: ", response.results);
 
-    /*if(util.isArrayNotEmpty(response.results)) {
+    if(util.isArrayNotEmpty(response.results)) {
       places.details({reference: response.results[0].reference}, function(err, response) {
         console.log("search details: ", response.result);
       });
-    }*/
-  });
+    }
+  });*/
 
 });
 
