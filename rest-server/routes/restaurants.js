@@ -12,6 +12,7 @@ var express = require('express'),
 
 //var APIKEY = 'AIzaSyA8E3NtmVFzMBXUm3cPXASzAkN8GZ6MaiA'; // server-lock APIKEY
 var APIKEY = 'AIzaSyDaLZXakZw5zx3y8xpWQRtSBvJwMSw8ffM'; // browser apps
+var PAGING_VALUE = 20;
 
 router.get('/nearby', function(req, res) {
   /** NOTES : everytime user fetch nearby thing, we would update
@@ -29,10 +30,12 @@ router.get('/nearby', function(req, res) {
     function(callback){
       var sql = 'SELECT rest_id, rest_name AS name, rest_address AS address, rest_geo_location AS geo_location, rest_pic AS pic, '+
                 'rest_pic_thumb AS pic_thumb, rest_google_id AS google_id, rest_google_reference AS google_reference '+
-                'FROM restaurants';
-      query = connection.query(sql, function(err, result){
-        if(err)
+                'FROM restaurants LIMIT ?,?';
+      query = connection.query(sql, [(page-1)*PAGING_VALUE,PAGING_VALUE],function(err, result){
+        if(err){
+          console.log(query.sql);
           callback('error');
+        }
         else {
           if(typeof result !== 'undefined' && result.length > 0){
             for(var i in result){
