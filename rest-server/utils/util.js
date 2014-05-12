@@ -3,7 +3,7 @@ var crypto = require('crypto');
 exports.PAGING_VALUE = 20;
 
 exports.createHash = function (p) {
-	var salt = crypto.randomBytes(128)//.toString('base64');
+	var salt = crypto.randomBytes(128);//.toString('base64');
   var h = crypto.pbkdf2Sync(p, salt, 10000, 256, function(err, derivedKey) {
   	if(err)
   		return reject(err);

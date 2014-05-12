@@ -13,6 +13,13 @@ body#login-page { padding: 0; position: relative; }
 .login-form .item input { width: 100%; display: inline-block; padding: 0 5px; border: 1px solid #d3d3d3; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) inset; font-size: 14px; line-height: 31px; height: 31px; }
 .login-form span { line-height: 30px; }
 .login-form button { float: right; }
+.tip {
+  margin: 20px auto 10px;
+  padding: 6px 10px;
+  background: #fff59b;
+  text-align: center;
+  font-size: 14px;
+}
 
 /*------------------------
  * styles for admin page

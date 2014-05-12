@@ -8,6 +8,7 @@ var tables = require('./routes/diningtables');
 var push = require('./routes/push');
 
 var admin = require('./routes/admin');
+var manager = require('./routes/manager');
 
 module.exports = function (app) {
   app.use('/restaurants', restaurants);
@@ -20,4 +21,5 @@ module.exports = function (app) {
   app.use('/push', push);
 
   app.use('/admin', admin);
+  app.use('/manager', manager);
 };

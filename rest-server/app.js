@@ -6,9 +6,10 @@ var config = require('./config');
 var routes = require('./routes');
 
 // 3rd-party middlewares
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+var logger        = require('morgan');
+var cookieParser  = require('cookie-parser');
+var session       = require('express-session');
+var bodyParser    = require('body-parser');
 
 var app = express();
 
@@ -20,6 +21,10 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
+app.use(session({
+  secret: config.session_secret,
+  cookie: { secure: true }
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
