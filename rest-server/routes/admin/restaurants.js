@@ -42,13 +42,14 @@ router.get('/fill', function(req, res) { // this function only serve to fill res
 });
 
 router.get('/', function(req, res) {
-  var query;
+  var query, page = req.param('page_number');
+  if(!page) page = 1;
   async.waterfall([
     function(callback){
       var sql = 'SELECT rest_id, rest_name AS name, rest_address AS address, rest_geo_location AS geo_location, '+
                 'rest_pic AS pic, rest_pic_thumb as pic_thumb, ra_id AS mgr_id, ra_name AS mgr_name '+
-                'FROM restaurants LEFT JOIN restaurant_accounts on rest_owner_id = ra_id';
-      query = connection.query(sql, function(err, result){
+                'FROM restaurants LEFT JOIN restaurant_accounts on rest_owner_id = ra_id ORDER BY rest_id ASC LIMIT ?,?';
+      query = connection.query(sql, [(page-1)*util.PAGING_VALUE,util.PAGING_VALUE], function(err, result){
         if(err)
           callback('error');
         else {
@@ -152,7 +153,10 @@ router.post('/create', function(req, res, next) {
             var thumbName = fields.r_name[0] + '_' + now + '_' + 'thumb_' + files.r_pic[0].originalFilename;
             var fullPath = fullDir + fullName;
             var thumbPath = thumbDir + thumbName;
-            gm(tmpPath).thumb(150, 150, thumbPath, 80, function(err){
+            gm(tmpPath)
+            .resize(150, 150, '!')
+            .noProfile()
+            .write(thumbPath, function(err){
               if(err){
                 callback('pic error');
               }
@@ -164,6 +168,9 @@ router.post('/create', function(req, res, next) {
                 });
               }
             });
+            //.thumb('150', '150', thumbPath, 80, function(err){
+              
+            //});
             post = {
               'r_name' : fields.r_name[0],
               'r_addr' : fields.r_addr[0],

@@ -12,7 +12,6 @@ var express = require('express'),
 
 //var APIKEY = 'AIzaSyA8E3NtmVFzMBXUm3cPXASzAkN8GZ6MaiA'; // server-lock APIKEY
 var APIKEY = 'AIzaSyDaLZXakZw5zx3y8xpWQRtSBvJwMSw8ffM'; // browser apps
-var PAGING_VALUE = 20;
 
 router.get('/nearby', function(req, res) {
   /** NOTES : everytime user fetch nearby thing, we would update
@@ -23,7 +22,9 @@ router.get('/nearby', function(req, res) {
   var latitude = req.param('latitude'),
       longitude = req.param('longitude'),
       page = req.param('page_number');
-
+  //if(!latitude) res.json(400, util.showError('missing latitude!'));
+  //if(!longitude) res.json(400, util.showError('missing longitude!'));
+  if(!page) page = 1;
   // temp solution
   var query;
   async.waterfall([
@@ -31,8 +32,8 @@ router.get('/nearby', function(req, res) {
       var sql = 'SELECT rest_id, rest_name AS name, rest_address AS address, rest_geo_location AS geo_location, rest_pic AS pic, '+
                 'rest_pic_thumb AS pic_thumb, rest_google_id AS google_id, rest_google_reference AS google_reference, '+
                 'ra_id AS mgr_id, ra_name AS mgr_name FROM restaurants '+
-                'LEFT JOIN restaurant_accounts ON rest_owner_id = ra_id LIMIT ?,?';
-      query = connection.query(sql, [(page-1)*PAGING_VALUE,PAGING_VALUE],function(err, result){
+                'LEFT JOIN restaurant_accounts ON rest_owner_id = ra_id ORDER BY rest_id ASC LIMIT ?,?';
+      query = connection.query(sql, [(page-1)*util.PAGING_VALUE,util.PAGING_VALUE],function(err, result){
         if(err)
           callback('error');
         else {
