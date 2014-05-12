@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 var app = require('../app');
-var config = require('../config');
 
-var server = app.listen(config.server.listenPort, function() {
+var server = app.listen(80, function() {
   console.log('Express server listening on port %d', server.address().port);
 });

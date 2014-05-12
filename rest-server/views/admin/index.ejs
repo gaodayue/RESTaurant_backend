@@ -1,0 +1,44 @@
+<% include header %>
+<div id="main" class="container">
+  <div class="row">
+    <ol class="breadcrumb">
+      <li class="active">Restaurants</li>
+    </ol>
+  </div>
+
+  <table class="table table-condensed table-bordered table-hover rest-table">
+    <thead>
+      <tr>
+        <th>Picture</th>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Manager</th>
+        <th>Operation</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% restaurants.forEach(function (restaurant) { %>
+      <tr>
+        <td class="icon-cell"><img class="rest-img" src="<%= restaurant.rest_pic_thumb || '/images/restaurant-icon-default.png' %>"></td>
+        <td><%= restaurant.rest_name %></td>
+        <td><%= restaurant.rest_address %></td>
+        <td><%= restaurant.mgr_name || '' %></td>
+        <td>
+          <a href="/admin/edit/<%= restaurant.rest_id %>">Edit</a>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <div style="text-align: center;">
+    <ul class="pagination">
+      <li class="disabled"><a href="#">&laquo;</a></li>
+      <li class="active"><a href="#">1</a></li>
+      <li><a href="#">2</a></li>
+      <li><a href="#">3</a></li>
+      <li><a href="#">&raquo;</a></li>
+    </ul>
+  </div>
+</div>
+<% include footer %>

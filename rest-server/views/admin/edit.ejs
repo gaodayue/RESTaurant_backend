@@ -1,0 +1,66 @@
+<% include header %>
+<div id="main" class="container">
+  <div class="row">
+    <ol class="breadcrumb">
+      <li><a href="/admin">Restaurants</a></li>
+      <li>Edit <%= restaurant.rest_name %></li>
+    </ol>
+  </div>
+
+  <form action="" class="form-horizontal" method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="form-rest-name" class="col-sm-2 control-label">Name</label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="form-rest-name" name="rest_name" 
+               placeholder="restaurant name" value="<%= restaurant.rest_name%>">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="form-rest-addr" class="col-sm-2 control-label">Address</label>
+     <div class="col-sm-6">
+        <textarea class="form-control" name="rest_addr" id="form-rest-addr" rows="3" 
+                  placeholder="restaurant address"><%= restaurant.rest_address%></textarea>
+     </div>
+    </div>
+    <div class="form-group">
+      <label for="form-rest-lng" class="col-sm-2 control-label">Geo Location</label>
+      <div class="col-sm-3">
+        <input type="text" class="form-control" id="form-rest-lng" name="rest_lng" 
+               placeholder="longitude" value="<%= restaurant.rest_geo_location.x %>">
+        <p class="help-block">Longitude</p>
+      </div>
+      <div class="col-sm-3">
+        <input type="text" class="form-control" id="form-rest-lat" name="rest_lat"
+               placeholder="latitude" value="<%= restaurant.rest_geo_location.y %>">
+        <p class="help-block">Latitude</p>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="form-rest-pic" class="col-sm-2 control-label">Picture</label>
+      <div class="col-sm-10">
+        <img class="rest-img-large" src="<%= restaurant.rest_pic_thumb || '/images/restaurant-icon-default.png' %>">
+        <input type="file" id="form-rest-pic" name="rest_pic">
+        <p class="help-block">Choose another picture</p>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="form-mgr-name" class="col-sm-2 control-label">Manager</label>
+      <input type="hidden" name="mgr_id" value="<%= restaurant.mgr_id || '' %>">
+      <div class="col-sm-3">
+        <input type="text" class="form-control" id="form-mgr-name" name="mgr_name"
+               placeholder="name" value="<%= restaurant.mgr_name || '' %>">
+      </div>
+      <div class="col-sm-3">
+        <input type="password" class="form-control" id="form-mgr-pwd" name="mgr_pwd" placeholder="password">
+        <p class="help-block">leave it blank if you don't want to change.</p>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </form>
+  
+</div>
+<% include footer %>
