@@ -47,8 +47,7 @@ router.get('/', function(req, res) {
     function(callback){
       var sql = 'SELECT rest_id, rest_name AS name, rest_address AS address, rest_geo_location AS geo_location, '+
                 'rest_pic AS pic, rest_pic_thumb as pic_thumb, ra_id AS mgr_id, ra_name AS mgr_name '+
-                'FROM restaurants, restaurant_accounts '+
-                'WHERE rest_owner_id = ra_id';
+                'FROM restaurants LEFT JOIN restaurant_accounts on rest_owner_id = ra_id';
       query = connection.query(sql, function(err, result){
         if(err)
           callback('error');
@@ -88,8 +87,8 @@ router.get('/:RESTID', function (req, res) {
     function (callback) {
       var sql = 'SELECT rest_id, rest_name AS name, rest_address AS address, rest_geo_location AS geo_location, '+
                 'rest_pic AS pic, rest_pic_thumb AS pic_thumb, ra_id AS mgr_id, ra_name AS mgr_name '+
-                'FROM restaurants, restaurant_accounts '+
-                'WHERE rest_owner_id = ra_id and rest_id = ?';
+                'FROM restaurants LEFT JOIN restaurant_accounts on rest_owner_id = ra_id '+
+                'WHERE rest_id = ?';
       connection.query(sql, restaurantId, function (err, result) {
         if(err)
           return callback('dberror');

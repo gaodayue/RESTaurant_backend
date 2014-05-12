@@ -29,13 +29,12 @@ router.get('/nearby', function(req, res) {
   async.waterfall([
     function(callback){
       var sql = 'SELECT rest_id, rest_name AS name, rest_address AS address, rest_geo_location AS geo_location, rest_pic AS pic, '+
-                'rest_pic_thumb AS pic_thumb, rest_google_id AS google_id, rest_google_reference AS google_reference '+
-                'FROM restaurants LIMIT ?,?';
+                'rest_pic_thumb AS pic_thumb, rest_google_id AS google_id, rest_google_reference AS google_reference, '+
+                'ra_id AS mgr_id, ra_name AS mgr_name FROM restaurants '+
+                'LEFT JOIN restaurant_accounts ON rest_owner_id = ra_id LIMIT ?,?';
       query = connection.query(sql, [(page-1)*PAGING_VALUE,PAGING_VALUE],function(err, result){
-        if(err){
-          console.log(query.sql);
+        if(err)
           callback('error');
-        }
         else {
           if(typeof result !== 'undefined' && result.length > 0){
             for(var i in result){
