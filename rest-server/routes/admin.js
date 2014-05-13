@@ -14,8 +14,8 @@ var connection = db.connection();
 
 // return a list of restaurants
 router.get('/', function (req, res) {
-  var sql = 'SELECT rest_id, rest_name, rest_address, rest_geo_location, rest_pic, rest_pic_thumb,' +
-            '       ra_id AS mgr_id, ra_name AS mgr_name ' +
+  var sql = 'SELECT rest_id, rest_name, rest_address, rest_geo_location, rest_pic, rest_pic_thumb, rest_category, ' +
+            'ra_id AS mgr_id, ra_name AS mgr_name ' +
             'FROM restaurants LEFT JOIN restaurant_accounts on rest_owner_id = ra_id ORDER BY rest_id ASC';
 
   connection.query(sql, function (err, restaurants) {
@@ -27,8 +27,8 @@ router.get('/', function (req, res) {
 // return detail page of one specific restaurant
 router.get('/edit/:rest_id', function (req, res) {
   var rest_id = req.params.rest_id;
-  var sql = 'SELECT rest_id, rest_name, rest_address, rest_geo_location, rest_pic, rest_pic_thumb,' +
-            '       ra_id AS mgr_id, ra_name AS mgr_name ' +
+  var sql = 'SELECT rest_id, rest_name, rest_address, rest_geo_location, rest_pic, rest_pic_thumb, rest_category, ' +
+            'ra_id AS mgr_id, ra_name AS mgr_name ' +
             'FROM restaurants LEFT JOIN restaurant_accounts on rest_owner_id = ra_id ' +
             'WHERE rest_id = ?';
 
@@ -65,6 +65,7 @@ router.post('/edit/:rest_id', function (req, res) {
           address: fields.rest_addr[0],
           longitude: fields.rest_lng[0],
           latitude: fields.rest_lat[0],
+          //category: fields.rest_?,
           pic: null,
           pic_thumb: null,
           manager: {

@@ -42,7 +42,7 @@ router.get('/fill', function(req, res) { // this function only serve to fill res
 });
 
 router.get('/', function(req, res) {
-  var query, page = req.param('page_number');
+  var query, page = req.param('page');
   if(!page) page = 1;
   async.waterfall([
     function(callback){

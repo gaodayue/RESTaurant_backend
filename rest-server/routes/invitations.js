@@ -10,15 +10,28 @@ var express = require('express'),
     async = require('async');
 
 router.get('/', function(req, res) {
-  var query;
+  var query, sql;
   var custId = req.param('customer_id');
+  var onlySent = (req.param('only_sent') ? true : false); // if onlySent > WHERE inv_is_host LIKE 'true'
+  var onlyRcv = (req.param('only_received') ? true : false); // if onlyRcv > WHERE inv_is_host LIKE 'false'
+  if(onlySent || onlyRcv) {
+    if(onlySent) {
+      sql = 'SELECT * FROM invitations WHERE inv_cust_id = ? AND inv_is_host LIKE "true"';
+    }
+    else if(onlyRcv) {
+      sql = 'SELECT * FROM invitations WHERE inv_cust_id = ? AND inv_is_host LIKE "false"';
+    }
+  }
+  else {
+    sql = 'SELECT * FROM invitations WHERE inv_cust_id = ?';
+  }
   if(!custId)
     res.json(400, util.showError('missing customer ID'));
   else {
     async.waterfall([
       function(callback){
         // GET INVITATION
-        query = connection.query('SELECT * FROM invitations WHERE inv_cust_id = ?',custId, function(err, result){
+        query = connection.query(sql,custId, function(err, result){
           if(err)
             callback('error');
           else {
@@ -36,7 +49,7 @@ router.get('/', function(req, res) {
           if(err === 'error')
             res.json(400, util.showError('unexpected error'));
           else if(err === 'not exist')
-            res.json(400, util.showError('invitation does not exist yet'));
+            res.json(400, util.showError('invitation does not exist'));
           else
             res.json(400, err);
         }

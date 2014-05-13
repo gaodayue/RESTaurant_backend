@@ -21,21 +21,26 @@ router.get('/nearby', function(req, res) {
   // siyuan building : [39.95158836249126,116.34070884788514]
   var latitude = req.param('latitude'),
       longitude = req.param('longitude'),
-      page = req.param('page_number');
-  //if(!latitude) res.json(400, util.showError('missing latitude!'));
-  //if(!longitude) res.json(400, util.showError('missing longitude!'));
+      page = req.param('page');
+
+  if(!latitude) res.json(400, util.showError('missing latitude!')); // TODO : ADD VALIDATION
+  if(!longitude) res.json(400, util.showError('missing longitude!')); // TODO : ADD VALIDATION
   if(!page) page = 1;
   // temp solution
   var query;
   async.waterfall([
     function(callback){
       var sql = 'SELECT rest_id, rest_name AS name, rest_address AS address, rest_geo_location AS geo_location, rest_pic AS pic, '+
-                'rest_pic_thumb AS pic_thumb, '+
-                'ra_id AS mgr_id, ra_name AS mgr_name FROM restaurants '+
-                'LEFT JOIN restaurant_accounts ON rest_owner_id = ra_id ORDER BY rest_id ASC LIMIT ?,?';
+                'rest_pic_thumb AS pic_thumb, rest_category AS category, ra_id AS mgr_id, ra_name AS mgr_name, '+
+                '6371 * 2 * ASIN(SQRT( POWER(SIN(('+latitude+' -Y(rest_geo_location)) * pi()/180 / 2), 2) +'+
+                'COS('+latitude+' * pi()/180) * COS('+latitude+' * pi()/180) *POWER(SIN(('+longitude+' -X(rest_geo_location)) * pi()/180 / 2), 2) )) as distance '+
+                'FROM restaurants '+
+                'LEFT JOIN restaurant_accounts ON rest_owner_id = ra_id ORDER BY distance ASC, rest_id ASC LIMIT ?,?';
       query = connection.query(sql, [(page-1)*util.PAGING_VALUE,util.PAGING_VALUE],function(err, result){
-        if(err)
+        if(err){
+          console.log(query.sql);
           callback('error');
+        }
         else {
           if(typeof result !== 'undefined' && result.length > 0){
             for(var i in result){
@@ -122,6 +127,7 @@ router.get('/show/:RESTID', function(req, res) {
               },
               'pic' : arg1.rest_pic,
               'pic_thumb' : arg1.rest_pic_thumb,
+              'category' : arg1.rest_category,
               'dishes' : dishRow
             };
             callback(null, data);

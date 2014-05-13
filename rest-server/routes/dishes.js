@@ -9,7 +9,7 @@ var express = require('express'),
     connection = db.connection(),
     async = require('async');
 
-router.post('/create', function(req, res) {
+/*router.post('/create', function(req, res) {
   var dishes = req.body;
   var post = {
     'r_id' : dishes.r_id,
@@ -168,6 +168,6 @@ router.post('/delete/:DISHID', function(req, res) {
         }
     });
   }
-})
+})*/
 
 module.exports = router;
