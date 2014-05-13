@@ -15,6 +15,7 @@
     "mkdirp" : "latest",
     "baidupush" : "latest",
     "google-places" : "latest",
+    "redis" : "latest",
     "iz": ">=0.4.1",
     "morgan": "~1.0.0",
     "cookie-parser": "~1.0.1",
