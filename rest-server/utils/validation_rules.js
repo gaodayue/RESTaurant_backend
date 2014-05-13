@@ -150,7 +150,7 @@ exports.invitation_dishes_rules = {
 	]
 };
 
-exports.account_signup_rules = {
+exports.cust_account_signup_rules = {
 	'phoneno': [
 		{
 			'rule': 'required',
@@ -190,7 +190,7 @@ exports.account_signup_rules = {
 	]
 };
 
-exports.account_signin_rules = {
+exports.cust_account_signin_rules = {
 	'phoneno': [
 		{
 			'rule': 'required',
@@ -220,6 +220,41 @@ exports.account_signin_rules = {
 			'rule': 'minLength',
 			'args': [4],
 			'error': 'Password minimal length is 4 character'
+		}
+	]
+};
+
+exports.rest_account_signup_rules = {
+	'name': [
+		{
+			'rule': 'required',
+			'error': 'Missing Name'
+		}
+	],
+	'password': [
+		{
+			'rule': 'required',
+			'error': 'Missing Password'
+		},
+		{
+			'rule': 'minLength',
+			'args': [4],
+			'error': 'Password minimal length is 4 character'
+		}
+	]
+};
+
+exports.rest_account_signin_rules = {
+	'name': [
+		{
+			'rule': 'required',
+			'error': 'Missing Name'
+		}
+	],
+	'password': [
+		{
+			'rule': 'required',
+			'error': 'Missing Password'
 		}
 	]
 };

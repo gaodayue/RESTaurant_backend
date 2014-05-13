@@ -30,7 +30,7 @@ router.get('/nearby', function(req, res) {
   async.waterfall([
     function(callback){
       var sql = 'SELECT rest_id, rest_name AS name, rest_address AS address, rest_geo_location AS geo_location, rest_pic AS pic, '+
-                'rest_pic_thumb AS pic_thumb, rest_google_id AS google_id, rest_google_reference AS google_reference, '+
+                'rest_pic_thumb AS pic_thumb, '+
                 'ra_id AS mgr_id, ra_name AS mgr_name FROM restaurants '+
                 'LEFT JOIN restaurant_accounts ON rest_owner_id = ra_id ORDER BY rest_id ASC LIMIT ?,?';
       query = connection.query(sql, [(page-1)*util.PAGING_VALUE,util.PAGING_VALUE],function(err, result){

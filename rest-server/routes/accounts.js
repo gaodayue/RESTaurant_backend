@@ -14,7 +14,7 @@ router.get('/', function(req, res) {
   var query;
   async.waterfall([
     function(callback){
-      query = connection.query('SELECT cust_id, cust_name as name, cust_phoneno as phoneno, cust_access_token as access_token FROM customer_accounts', function(err, result){
+      query = connection.query('SELECT cust_id, cust_name as name, cust_phoneno as phoneno FROM customer_accounts', function(err, result){
         if(err)
           callback('error');
         else {
@@ -42,7 +42,7 @@ router.post('/signup', function(req, res) {
   var account = req.body;
   var query;
   // validate input first
-  var rules = are(validationRules.account_signup_rules);
+  var rules = are(validationRules.cust_account_signup_rules);
   if (!rules.validFor(account)) {
     var invalidFields = rules.getInvalidFields();
     var errorMessage = invalidFields[Object.keys(invalidFields)[0]][0]; // only need to retrieve the last error
@@ -51,12 +51,10 @@ router.post('/signup', function(req, res) {
   else {
     async.waterfall([
       function(callback){
-        var access_token = uuid.v1();
         var post = {
           'cust_phoneno' : account.phoneno,
           'cust_name' : account.name,
-          'cust_password' : util.createHash(account.password),
-          'cust_access_token' : access_token
+          'cust_password' : util.createHash(account.password)
         };
         query = connection.query('INSERT INTO customer_accounts SET ?', post, function(err, result){
           if(err){
@@ -65,16 +63,17 @@ router.post('/signup', function(req, res) {
           }
           else{
             custId = result.insertId;
-            callback(null, custId, account.name, access_token);
+            callback(null, custId, account.name);
           } 
         });
       },
-      function(arg1, arg2, arg3, callback){
+      function(arg1, arg2, callback){
         var data = {
           'cust_id' : arg1,
-          'cust_name' : arg2,
-          'cust_access_token' : arg3
+          'cust_name' : arg2//,
+          //'cust_access_token' : uuid.v1()
         };
+        // set redis token
         callback(null, data);
       }
     ], function(err, result){
@@ -90,7 +89,7 @@ router.post('/signup', function(req, res) {
 router.post('/signin', function(req, res) {
   var account = req.body;
   // validate input first
-  var rules = are(validationRules.account_signin_rules);
+  var rules = are(validationRules.cust_account_signin_rules);
   if (!rules.validFor(account)) {
     var invalidFields = rules.getInvalidFields();
     var errorMessage = invalidFields[Object.keys(invalidFields)[0]][0]; // only need to retrieve the last error
@@ -120,10 +119,11 @@ router.post('/signin', function(req, res) {
           callback(null, arg1);
       },
       function(arg1, callback){
+        // var accessToken = redis.get
         var data = {
           'cust_id' : arg1.cust_id,
-          'cust_name' : arg1.cust_name,
-          'cust_access_token' : arg1.cust_access_token
+          'cust_name' : arg1.cust_name//,
+          //'cust_access_token' : accessToken
         };
         callback(null, data);
       }
