@@ -8,7 +8,8 @@ var express = require('express'),
     db = require('../utils/database'),
     connection = db.connection(),
     async = require('async'),
-    GooglePlaces = require('google-places');
+    GooglePlaces = require('google-places'),
+    _ = require('underscore');
 
 //var APIKEY = 'AIzaSyA8E3NtmVFzMBXUm3cPXASzAkN8GZ6MaiA'; // server-lock APIKEY
 var APIKEY = 'AIzaSyDaLZXakZw5zx3y8xpWQRtSBvJwMSw8ffM'; // browser apps
@@ -23,49 +24,48 @@ router.get('/nearby', function(req, res) {
       longitude = req.param('longitude'),
       page = req.param('page');
 
-  if(!latitude) res.json(400, util.showError('missing latitude!')); // TODO : ADD VALIDATION
-  if(!longitude) res.json(400, util.showError('missing longitude!')); // TODO : ADD VALIDATION
   if(!page) page = 1;
-  // temp solution
-  var query;
-  async.waterfall([
-    function(callback){
-      var sql = 'SELECT rest_id, rest_name AS name, rest_address AS address, rest_geo_location AS geo_location, rest_pic AS pic, '+
-                'rest_pic_thumb AS pic_thumb, rest_category AS category, ra_id AS mgr_id, ra_name AS mgr_name, '+
-                '6371 * 2 * ASIN(SQRT( POWER(SIN(('+latitude+' -Y(rest_geo_location)) * pi()/180 / 2), 2) +'+
-                'COS('+latitude+' * pi()/180) * COS('+latitude+' * pi()/180) *POWER(SIN(('+longitude+' -X(rest_geo_location)) * pi()/180 / 2), 2) )) as distance '+
-                'FROM restaurants '+
-                'LEFT JOIN restaurant_accounts ON rest_owner_id = ra_id ORDER BY distance ASC, rest_id ASC LIMIT ?,?';
-      query = connection.query(sql, [(page-1)*util.PAGING_VALUE,util.PAGING_VALUE],function(err, result){
-        if(err){
-          console.log(query.sql);
-          callback('error');
-        }
-        else {
-          if(typeof result !== 'undefined' && result.length > 0){
-            for(var i in result){
-              result[i].geo_location.longitude = result[i].geo_location.x;
-              delete result[i].geo_location.x;
-              result[i].geo_location.latitude = result[i].geo_location.y;
-              delete result[i].geo_location.y;
+  if(!latitude || !_.isNumber(latitude)) res.json(400, util.showError('missing latitude!')); // TODO : ADD VALIDATION
+  else if(!longitude || !_.isNumber(longitude)) res.json(400, util.showError('missing longitude!')); // TODO : ADD VALIDATION
+  else {
+    var query;
+    async.waterfall([
+      function(callback){
+        var sql = 'SELECT rest_id, rest_name AS name, rest_address AS address, rest_geo_location AS geo_location, rest_pic AS pic, '+
+                  'rest_pic_thumb AS pic_thumb, rest_category AS category, ra_id AS mgr_id, ra_name AS mgr_name, '+
+                  '6371 * 2 * ASIN(SQRT( POWER(SIN(('+latitude+' -Y(rest_geo_location)) * pi()/180 / 2), 2) +'+
+                  'COS('+latitude+' * pi()/180) * COS('+latitude+' * pi()/180) *POWER(SIN(('+longitude+' -X(rest_geo_location)) * pi()/180 / 2), 2) )) as distance '+
+                  'FROM restaurants '+
+                  'LEFT JOIN restaurant_accounts ON rest_owner_id = ra_id ORDER BY distance ASC, rest_id ASC LIMIT ?,?';
+        query = connection.query(sql, [(page-1)*util.PAGING_VALUE,util.PAGING_VALUE],function(err, result){
+          if(err)
+            callback('error');
+          else {
+            if(typeof result !== 'undefined' && result.length > 0){
+              for(var i in result){
+                result[i].geo_location.longitude = result[i].geo_location.x;
+                delete result[i].geo_location.x;
+                result[i].geo_location.latitude = result[i].geo_location.y;
+                delete result[i].geo_location.y;
+              }
+              callback(null, result);
             }
-            callback(null, result);
+            else
+              callback('not exist');
           }
-          else
-            callback('not exist');
-        }
-      });
-    }
-  ], function(err, result){
-      if(err){
-        if(err === 'not exist')
-          res.json(400, util.showError('no restaurants!'));
-        else
-          res.json(400, util.showError('unexpected error'));
+        });
       }
-      else
-        res.json(200, result);
-  }); // end of temp solution
+    ], function(err, result){
+        if(err){
+          if(err === 'not exist')
+            res.json(400, util.showError('no restaurants!'));
+          else
+            res.json(400, util.showError('unexpected error'));
+        }
+        else
+          res.json(200, result);
+    });
+  }
 
   // GOOGLE PLACES
   /*var places = new GooglePlaces(APIKEY);
@@ -95,8 +95,8 @@ router.get('/nearby', function(req, res) {
 router.get('/show/:RESTID', function(req, res) {
   var restaurantId = req.params.RESTID;
   var data, query;
-  if (restaurantId != parseInt(restaurantId))
-    res.json(400, util.showError('invalid request'));
+  if (!_.isNumber(restaurantId))
+    res.json(400, util.showError('invalid restaurant ID'));
   else{
     async.waterfall([
       function(callback){
@@ -143,6 +143,49 @@ router.get('/show/:RESTID', function(req, res) {
       }
       else
         res.json(200, result);
+    });
+  }
+});
+
+router.get('/search', function(req, res) {
+  var keyword = req.param('keyword');
+  var page = req.param('page');
+  if(!page) page = 1;
+  if(!keyword || !_.isString(keyword)) res.json(400, util.showError('invalid parameter keyword!'));
+  else {
+    async.waterfall([
+      function(callback){
+        var sql = 'SELECT rest_id, rest_name AS name, rest_address AS address, rest_geo_location AS geo_location, rest_pic AS pic, '+
+                  'rest_pic_thumb AS pic_thumb, rest_category AS category, ra_id AS mgr_id, ra_name AS mgr_name '+
+                  'FROM restaurants LEFT JOIN restaurant_accounts ON rest_owner_id = ra_id '+
+                  'WHERE rest_name LIKE "%'+keyword+'%" OR rest_category LIKE "%'+keyword+'%" LIMIT ?,?';
+        query = connection.query(sql, [(page-1)*util.PAGING_VALUE,util.PAGING_VALUE],function(err, result){
+          if(err)
+            callback('error');
+          else {
+            if(typeof result !== 'undefined' && result.length > 0){
+              for(var i in result){
+                result[i].geo_location.longitude = result[i].geo_location.x;
+                delete result[i].geo_location.x;
+                result[i].geo_location.latitude = result[i].geo_location.y;
+                delete result[i].geo_location.y;
+              }
+              callback(null, result);
+            }
+            else
+              callback('not exist');
+          }
+        });
+      }
+    ], function(err, result){
+        if(err){
+          if(err === 'not exist')
+            res.json(400, util.showError('no restaurants!'));
+          else
+            res.json(400, util.showError('unexpected error'));
+        }
+        else
+          res.json(200, result);
     });
   }
 });
