@@ -1,6 +1,6 @@
-var crypto = require('crypto'),
+var crypto = require('crypto');/*,
     redis = require('redis'),
-    redisClient = redis.createClient();
+    redisClient = redis.createClient();*/
 
 exports.PAGING_VALUE = 20;
 exports.ADMIN_TOKEN = '';
