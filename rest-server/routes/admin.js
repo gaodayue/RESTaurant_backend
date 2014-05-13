@@ -65,7 +65,7 @@ router.post('/edit/:rest_id', function (req, res) {
           address: fields.rest_addr[0],
           longitude: fields.rest_lng[0],
           latitude: fields.rest_lat[0],
-          //category: fields.rest_?,
+          category: fields.rest_category[0],
           pic: null,
           pic_thumb: null,
           manager: {
@@ -143,7 +143,8 @@ router.post('/edit/:rest_id', function (req, res) {
     function (restaurant, callback) {
       var data = {
         rest_name: restaurant.name,
-        rest_address: restaurant.address
+        rest_address: restaurant.address,
+        rest_category: restaurant.category
       };
       if (restaurant.manager.id) {
         data.rest_owner_id = restaurant.manager.id;

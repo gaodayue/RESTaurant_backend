@@ -12,27 +12,41 @@
       <label for="form-rest-name" class="col-sm-2 control-label">Name</label>
       <div class="col-sm-6">
         <input type="text" class="form-control" id="form-rest-name" name="rest_name" 
-               placeholder="restaurant name" value="<%= restaurant.rest_name%>">
+               placeholder="restaurant name" value="<%= restaurant.rest_name%>" required>
       </div>
     </div>
     <div class="form-group">
       <label for="form-rest-addr" class="col-sm-2 control-label">Address</label>
      <div class="col-sm-6">
         <textarea class="form-control" name="rest_addr" id="form-rest-addr" rows="3" 
-                  placeholder="restaurant address"><%= restaurant.rest_address%></textarea>
+                  placeholder="restaurant address" required><%= restaurant.rest_address%></textarea>
      </div>
     </div>
     <div class="form-group">
       <label for="form-rest-lng" class="col-sm-2 control-label">Geo Location</label>
       <div class="col-sm-3">
         <input type="text" class="form-control" id="form-rest-lng" name="rest_lng" 
-               placeholder="longitude" value="<%= restaurant.rest_geo_location.x %>">
+               placeholder="longitude" value="<%= restaurant.rest_geo_location.x %>" required>
         <p class="help-block">Longitude</p>
       </div>
       <div class="col-sm-3">
         <input type="text" class="form-control" id="form-rest-lat" name="rest_lat"
-               placeholder="latitude" value="<%= restaurant.rest_geo_location.y %>">
+               placeholder="latitude" value="<%= restaurant.rest_geo_location.y %>" required>
         <p class="help-block">Latitude</p>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="form-rest-category" class="col-sm-2 control-label">Category</label>
+      <div class="col-sm-6">
+        <select name="rest_category" id="form-rest-category" class="form-control" data-old-value="<%= restaurant.rest_category %>">
+          <option value="">--- not specified ---</option>
+          <option value="Chinese">Chinese Food</option>
+          <option value="Japanese">Japanese Food</option>
+          <option value="Korea">Korea Food</option>
+          <option value="Western">Western Food</option>
+          <option value="Bread">Bread, Desert</option>
+          <option value="Buffet">Buffet</option>
+        </select>
       </div>
     </div>
     <div class="form-group">
@@ -61,6 +75,12 @@
       </div>
     </div>
   </form>
+  <script>
+$(document).ready(function () {
+  var category_val = $('#form-rest-category').attr('data-old-value');
+  $('#form-rest-category option[value="' + category_val + '"]').prop('selected', true);
+});
+  </script>
   
 </div>
 <% include footer %>
