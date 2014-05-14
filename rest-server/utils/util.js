@@ -6,39 +6,56 @@ exports.PAGING_VALUE = 20;
 exports.ADMIN_TOKEN = '';
 
 exports.checkAuthRest = function (req, res, next) {
+  var id, token;
   if(req.params.RESTID)
     id = req.params.RESTID;
   if(req.param('r_id'))
     id = req.param('r_id');
   if(req.body.r_id)
     id = req.body.r_id;
+  if(req.param('access_token'))
+    token = req.param('access_token');
+  if(req.body.access_token)
+    token = req.body.access_token;
   redisClient.get('rest:'+id, function (err, result) {
     if (err)
       res.json(500, {result : 'error', error_message : 'internal server error'});
     if (result === null)
       res.json(401, {result : 'error', error_message : 'unauthorized'});
     else {
-      res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-      next();
+      if (result === token) {
+        res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+        next();
+      }
+      else 
+        res.json(401, {result : 'error', error_message : 'unauthorized'});
     }
   });
 };
 
 exports.checkAuthCust = function (req, res, next) {
-  //if(req.params.RESTID)
-  //  id = req.params.RESTID;
+  var id, token;
   if(req.param('customer_id'))
     id = req.param('customer_id');
   if(req.body.customer_id)
     id = req.body.customer_id;
+  if(req.param('access_token'))
+    token = req.param('access_token');
+  if(req.body.access_token)
+    token = req.body.access_token;
+  if(!id || !token) res.json(400, {result : 'error', error_message : 'missing authentication detail'})
   redisClient.get('cust:'+id, function (err, result) {
     if (err)
       res.json(500, {result : 'error', error_message : 'internal server error'});
     if (result === null)
       res.json(401, {result : 'error', error_message : 'unauthorized'});
     else {
-      res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-      next();
+      if (result === token) {
+        res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+        next();
+      }
+      else 
+        res.json(401, {result : 'error', error_message : 'unauthorized'});
     }
   });
 };

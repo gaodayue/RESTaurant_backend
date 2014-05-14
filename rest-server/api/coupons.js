@@ -9,15 +9,15 @@ var express = require('express'),
     connection = db.connection(),
     async = require('async');
 
-router.get('/', function(req, res) {
+router.get('/', util.checkAuthCust, function(req, res) {
 	res.send('tbd');
 });
 
-router.post('/create', function(req, res) {
+router.post('/create', util.checkAuthCust, function(req, res) {
 	res.send('tbd');	
 });
 
-router.post('/send', function(req, res) { // push notification to user which used to eat at the specified restaurant.
+router.post('/send', util.checkAuthCust, function(req, res) { // push notification to user which used to eat at the specified restaurant.
 	res.send('tbd');	
 });
 

@@ -14,7 +14,7 @@ var express = require('express'),
 //var APIKEY = 'AIzaSyA8E3NtmVFzMBXUm3cPXASzAkN8GZ6MaiA'; // server-lock APIKEY
 var APIKEY = 'AIzaSyDaLZXakZw5zx3y8xpWQRtSBvJwMSw8ffM'; // browser apps
 
-router.get('/nearby', function(req, res) {
+router.get('/nearby', util.checkAuthCust, function(req, res) {
   /** NOTES : everytime user fetch nearby thing, we would update
     * the whole DB with INSERT IGNORE or INSERT .. on DUPLICATE KEY UPDATE (?)
     * One place will have only one id and can have multiple references. >> Google Places Data
@@ -92,7 +92,7 @@ router.get('/nearby', function(req, res) {
 
 });
 
-router.get('/show/:RESTID', function(req, res) {
+router.get('/show/:RESTID', util.checkAuthCust, function(req, res) {
   var restaurantId = req.params.RESTID;
   var data, query;
   if(!restaurantId)
@@ -147,7 +147,7 @@ router.get('/show/:RESTID', function(req, res) {
   }
 });
 
-router.get('/search', function(req, res) {
+router.get('/search', util.checkAuthCust, function(req, res) {
   var keyword = req.param('keyword');
   var page = req.param('page');
   if(!page) page = 1;

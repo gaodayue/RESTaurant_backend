@@ -8,7 +8,9 @@ var express = require('express'),
     db = require('../utils/database'),
     connection = db.connection(),
     async = require('async'),
-    uuid = require('node-uuid');
+    uuid = require('node-uuid'),
+    redis = require('redis'),
+    redisClient = redis.createClient();
 
 router.get('/', function(req, res) {
   var query;
@@ -70,15 +72,18 @@ router.post('/signup', function(req, res) {
       function(arg1, arg2, callback){
         var data = {
           'cust_id' : arg1,
-          'cust_name' : arg2//,
-          //'cust_access_token' : uuid.v1()
+          'cust_name' : arg2,
+          'cust_access_token' : uuid.v1()
         };
-        // set redis token
-        callback(null, data);
+        redisClient.set('cust:'+data.cust_id, data.cust_access_token, function(err, result) {
+          if(err) callback('redis error');
+          else callback(null, data);
+        });
       }
     ], function(err, result){
       if(err){
         if(err === 'duplicate') res.json(400, util.showError('duplicate phoneno!'));
+        else if(err === 'redis error') res.json(500, util.showError('redis error'));
         else res.json(500, util.showError('unexpected error'));
       }
       res.json(200, result);
@@ -122,21 +127,32 @@ router.post('/signin', function(req, res) {
         // var accessToken = redis.get
         var data = {
           'cust_id' : arg1.cust_id,
-          'cust_name' : arg1.cust_name//,
-          //'cust_access_token' : accessToken
+          'cust_name' : arg1.cust_name,
+          'cust_access_token' : uuid.v1()
         };
-        callback(null, data);
+        redisClient.set('cust:'+data.cust_id, data.cust_access_token, function(err, result) {
+          if(err) callback('redis error');
+          else callback(null, data);
+        });
       }
     ], function(err, result){
       if(err){
-        if(err === 'invalid'){
-          res.json(400, util.showError('invalid username/password'));
-        }
-        else {
-          res.json(500, util.showError('unexpected error'));
-        }
+        if(err === 'invalid') res.json(400, util.showError('invalid username/password'));
+        else if(err === 'redis error') res.json(500, util.showError('redis error'));
+        else res.json(500, util.showError('unexpected error'));
       }
       res.json(200, result);
+    });
+  }
+});
+
+router.post('/logout', util.checkAuthCust, function (req, res) {
+  var custId = req.body.customer_id;
+  if(!custId) res.json(400, util.showError('missing customer ID'));
+  else {
+    redisClient.del('cust:'+custId, function(err, result) {
+      if(err) res.json(500, util.showError('redis error'));
+      else res.json(200, 'logout success');
     });
   }
 });

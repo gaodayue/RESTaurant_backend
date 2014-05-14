@@ -1,6 +1,10 @@
 var express = require('express'),
     router = express.Router(),
-    BaiduPush = require('baidupush');
+    BaiduPush = require('baidupush')
+    util = require('../utils/util'),
+    db = require('../utils/database'),
+    connection = db.connection(),
+    async = require('async');
 
 var APIKEY = 'hwfeocSIPlgKTasIuARPREnS';
 var SECRETKEY = 'AUC9iIPVi5h87xPMuovh7nBiiuwuCUVg';
@@ -29,13 +33,13 @@ var SECRETKEY = 'AUC9iIPVi5h87xPMuovh7nBiiuwuCUVg';
   });
 });*/
 
-router.post('/register', function (req, res) {
+router.post('/register', util.checkAuthCust, function (req, res) {
   // TODO : update customer_accounts.push_id 
   var post = req.body;
   res.send('tbd');
 });
 
-router.post('/send', function (req, res) {
+router.post('/send', util.checkAuthCust, function (req, res) {
   // TODO : send specific push notification to targeted user
   var post = req.body;
   res.send('tbd');

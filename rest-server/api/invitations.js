@@ -9,7 +9,7 @@ var express = require('express'),
     connection = db.connection(),
     async = require('async');
 
-router.get('/', function(req, res) {
+router.get('/', util.checkAuthCust, function(req, res) {
   var query, sql;
   var custId = req.param('customer_id');
   var onlySent = (req.param('only_sent') ? true : false); // if onlySent > WHERE inv_is_host LIKE 'true'
@@ -59,7 +59,7 @@ router.get('/', function(req, res) {
   }
 });
 
-router.get('/:INVID', function(req, res) {
+router.get('/:INVID', util.checkAuthCust, function(req, res) {
   var query;
   var invitationId = req.params.INVID;
   var custId = req.param('customer_id');
@@ -180,7 +180,7 @@ router.get('/:INVID', function(req, res) {
   }
 });
 
-router.post('/create', function(req, res) {
+router.post('/create', util.checkAuthCust, function(req, res) {
   // TODO: implement transaction
   // INSERT orders, order_items, invitations (this is the correct order)
   // need to change current method!
@@ -393,7 +393,7 @@ router.post('/create', function(req, res) {
   });
 });
 
-router.post('/accept/:INVID', function(req, res) {
+router.post('/accept/:INVID', util.checkAuthCust, function(req, res) {
   var query;
   var invitationId = req.params.INVID;
   var custId = req.body.customer_id;
@@ -523,7 +523,7 @@ router.post('/accept/:INVID', function(req, res) {
   }
 });
 
-router.post('/deny/:INVID', function(req, res) {
+router.post('/deny/:INVID', util.checkAuthCust, function(req, res) {
   var query;
   var invitationId = req.params.INVID;
   var custId = req.body.customer_id;
