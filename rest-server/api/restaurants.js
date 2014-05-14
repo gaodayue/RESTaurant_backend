@@ -25,8 +25,8 @@ router.get('/nearby', function(req, res) {
       page = req.param('page');
 
   if(!page) page = 1;
-  if(!latitude || !_.isNumber(latitude)) res.json(400, util.showError('missing latitude!')); // TODO : ADD VALIDATION
-  else if(!longitude || !_.isNumber(longitude)) res.json(400, util.showError('missing longitude!')); // TODO : ADD VALIDATION
+  if(!latitude) res.json(400, util.showError('missing latitude!')); // TODO : ADD VALIDATION
+  else if(!longitude) res.json(400, util.showError('missing longitude!')); // TODO : ADD VALIDATION
   else {
     var query;
     async.waterfall([

@@ -29,4 +29,16 @@ var SECRETKEY = 'AUC9iIPVi5h87xPMuovh7nBiiuwuCUVg';
   });
 });*/
 
+router.post('/register', function (req, res) {
+  // TODO : update customer_accounts.push_id 
+  var post = req.body;
+  res.send('tbd');
+});
+
+router.post('/send', function (req, res) {
+  // TODO : send specific push notification to targeted user
+  var post = req.body;
+  res.send('tbd');
+});
+
 module.exports = router;
