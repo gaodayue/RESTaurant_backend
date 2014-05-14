@@ -99,7 +99,7 @@ router.get('/:INVID', function(req, res) {
         });
       },
       function(arg1, arg2, callback){
-        var sql = 'SELECT rest_id, rest_name, rest_address, rest_geo_location, rest_pic, cust_id, '
+        var sql = 'SELECT rest_id, rest_name, rest_address, rest_geo_location, rest_pic, rest_pic_thumb, cust_id, '
               +'cust_name, o_id, o_totalprice, o_num_people, o_request_date, o_request_period, '
               +'o_schedule_info, o_status, o_created_time, o_updated_time '
               +'FROM orders, restaurants, customer_accounts '
@@ -120,6 +120,7 @@ router.get('/:INVID', function(req, res) {
                     'latitude' : result[0].rest_geo_location.y
                   },
                   'pic' : result[0].rest_pic,
+                  'pic_thumb' : result[0].rest_pic_thumb,
                 },
                 'customer' : {
                   'cust_id' : result[0].cust_id,
@@ -319,7 +320,7 @@ router.post('/create', function(req, res) {
                 participant.inv_status = result[i].inv_status;
               dataInvitations.participants.push(participant);
             }
-            sql = 'SELECT rest_id, rest_name, rest_address, rest_geo_location, rest_pic, cust_id, '
+            sql = 'SELECT rest_id, rest_name, rest_address, rest_geo_location, rest_pic, rest_pic_thumb, cust_id, '
               +'cust_name, o_id, o_totalprice, o_num_people, o_request_date, o_request_period, '
               +'o_schedule_info, o_status, o_created_time, o_updated_time '
               +'FROM orders, restaurants, customer_accounts '
@@ -339,6 +340,7 @@ router.post('/create', function(req, res) {
                         'latitude' : result[0].rest_geo_location.y
                       },
                       'pic' : result[0].rest_pic,
+                      'pic_thumb' : result[0].rest_pic_thumb,
                     },
                     'customer' : {
                       'cust_id' : result[0].cust_id,
@@ -441,7 +443,7 @@ router.post('/accept/:INVID', function(req, res) {
         });
       },
       function(arg1, arg2, callback){
-        var sql = 'SELECT rest_id, rest_name, rest_address, rest_geo_location, rest_pic, cust_id, '
+        var sql = 'SELECT rest_id, rest_name, rest_address, rest_geo_location, rest_pic, rest_pic_thumb, cust_id, '
               +'cust_name, o_id, o_totalprice, o_num_people, o_request_date, o_request_period, '
               +'o_schedule_info, o_status, o_created_time, o_updated_time '
               +'FROM orders, restaurants, customer_accounts '
@@ -571,7 +573,7 @@ router.post('/deny/:INVID', function(req, res) {
         });
       },
       function(arg1, arg2, callback){
-        var sql = 'SELECT rest_id, rest_name, rest_address, rest_geo_location, rest_pic, cust_id, '
+        var sql = 'SELECT rest_id, rest_name, rest_address, rest_geo_location, rest_pic, rest_pic_thumb, cust_id, '
               +'cust_name, o_id, o_totalprice, o_num_people, o_request_date, o_request_period, '
               +'o_schedule_info, o_status, o_created_time, o_updated_time '
               +'FROM orders, restaurants, customer_accounts '
@@ -592,6 +594,7 @@ router.post('/deny/:INVID', function(req, res) {
                     'latitude' : result[0].rest_geo_location.y
                   },
                   'pic' : result[0].rest_pic,
+                  'pic_thumb' : result[0].rest_pic_thumb,
                 },
                 'customer' : {
                   'cust_id' : result[0].cust_id,
