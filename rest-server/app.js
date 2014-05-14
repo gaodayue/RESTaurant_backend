@@ -3,7 +3,8 @@ var path = require('path');
 var async = require('async');
 var mkdirp = require('mkdirp');
 var config = require('./config');
-var routes = require('./routes');
+var api_routes = require('./api/routes');
+var web_routes = require('./web/routes');
 
 // 3rd-party middlewares
 var logger        = require('morgan');
@@ -28,7 +29,8 @@ app.use(session({
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-routes(app);
+api_routes(app);
+web_routes(app);
 
 // error handlers
 app.use(function (err, req, res, next) {
