@@ -83,7 +83,7 @@ router.get('/:INVID', function(req, res) {
               for(var i in result){
                 var participant = {
                   'cust_id' : result[i].cust_id,
-                  'cust_name' : result[i].cust_name
+                  'name' : result[i].cust_name
                 };
                 if(result[i].inv_is_host)
                   participant.is_host = result[i].inv_is_host;
@@ -311,7 +311,7 @@ router.post('/create', function(req, res) {
             for(var i in result){
               var participant = {
                 'cust_id' : result[i].cust_id,
-                'cust_name' : result[i].cust_name
+                'name' : result[i].cust_name
               };
               if(result[i].inv_is_host)
                 participant.is_host = result[i].inv_is_host;
@@ -425,7 +425,7 @@ router.post('/accept/:INVID', function(req, res) {
               for(var i in result){
                 var participant = {
                   'cust_id' : result[i].cust_id,
-                  'cust_name' : result[i].cust_name
+                  'name' : result[i].cust_name
                 };
                 if(result[i].inv_is_host)
                   participant.is_host = result[i].inv_is_host;
@@ -555,7 +555,7 @@ router.post('/deny/:INVID', function(req, res) {
               for(var i in result){
                 var participant = {
                   'cust_id' : result[i].cust_id,
-                  'cust_name' : result[i].cust_name
+                  'name' : result[i].cust_name
                 };
                 if(result[i].inv_is_host)
                   participant.is_host = result[i].inv_is_host;
