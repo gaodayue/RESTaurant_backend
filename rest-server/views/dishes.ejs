@@ -1,0 +1,120 @@
+<% include header %>
+<div id="main" class="container">
+  <div class="row">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      <li class="active">Dishes</li>
+    </ol>
+  </div>
+
+  <section class="data-editor">
+    <ul class="data-editor-header">
+      <li>Food Name</li>
+      <li>Price</li>
+    </ul>
+    <!-- <div class="data-editor-row">
+      <input type="text" class="data-editor-input" placeholder="food name" name="dish_name" value="Big Mac">
+      <input type="text" class="data-editor-input" placeholder="food price" name="dish_price" value="20">
+      <a class="data-editor-remove">
+        <span class="glyphicon glyphicon-remove"></span>
+      </a>
+    </div> -->
+    <div class="data-editor-row">
+      <input type="text" class="data-editor-input" placeholder="food name" name="dish_name">
+      <input type="text" class="data-editor-input" placeholder="food price" name="dish_price">
+    </div>
+    <ul class="data-editor-footer">
+      <li><button id="btn-save" class="btn btn-primary" data-loading-text="Waiting...">Save</button></li>
+      <!-- <li><button class="btn btn-default">Reset</button></li> -->
+    </ul>
+  </section>
+  <script type="text/javascript">
+function addDish(name, price) {
+  var lastRow = $('.data-editor-row:last');
+  var newRow = lastRow.clone()
+                  .find('input[name="dish_name"]').val(name).end()
+                  .find('input[name="dish_price"]').val(price).end();
+  
+  $('<a class="data-editor-remove"><span class="glyphicon glyphicon-remove"></span></a>')
+    .click(function (e) {
+      e.preventDefault();
+      $(this).parent().remove();
+    })
+    .appendTo(newRow);
+
+  newRow.insertBefore(lastRow);
+  return newRow;
+}
+
+function loadDishesFromServer() {
+  $.get('/api/dishes')
+    .done(function (data) {
+      $.each(data, function (index, dish) {
+        addDish(dish.name, dish.price);
+      });
+    });
+}
+
+function bindEventToLastRow() {
+  var lastRow = $('.data-editor-row:last');
+
+  lastRow.find('input[name="dish_name"]').bind('focus', function () {
+    var newRow = addDish('', '');
+    newRow.find('input[name="dish_name"]').focus();
+  });
+
+  lastRow.find('input[name="dish_price"]').bind('focus', function () {
+    var newRow = addDish('', '');
+    newRow.find('input[name="dish_price"]').focus();
+  });
+}
+
+$(document).ready(function () {
+  loadDishesFromServer();
+  bindEventToLastRow();
+
+  $('#btn-save').click(function (e) {
+    e.preventDefault();
+
+    var btn = $(this);
+    btn.button('loading');
+    // get new dishes data
+    var newDishes = [];
+    $('.data-editor-row:not(:last)').each(function (index) {
+      newDishes.push({
+        name: $(this).find('input[name="dish_name"]').val(),
+        price: $(this).find('input[name="dish_price"]').val()
+      });
+    });
+    $.ajax({
+      type: "POST",
+      url: '/api/dishes',
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify(newDishes)
+    })
+    .done(function () {
+      noty({
+        layout: 'topCenter',
+        type: 'success',
+        text: 'success',
+        timeout: 1000
+      });
+    })
+    .fail(function () {
+      noty({
+        layout: 'topCenter',
+        type: 'warning',
+        text: 'something goes wrong',
+        timeout: 1000
+      });
+    })
+    .always(function () {
+      btn.button('reset');
+    });
+  });
+
+  
+});
+  </script>
+</div>
+<% include footer %>

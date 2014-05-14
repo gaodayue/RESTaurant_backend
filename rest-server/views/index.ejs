@@ -1,0 +1,157 @@
+<% include header %>
+<style type="text/css">
+.tdd {background-color: #5cb85c; border-left: 7px solid #8B8989 ; cursor:pointer}
+.tdd2 {background-color: #ED9C28; border-left: 7px solid #fff; cursor:pointer }
+.tddc {background-color: #5cb85c; cursor:pointer}
+.tdd2c {background-color: #ED9C28; cursor:pointer}
+.tdd3 {background-color: #E1E2DF}
+.info {width: 30%; display: inline;}
+</style>
+<div id="main" class="container">
+  <div class="row">
+    <ol class="breadcrumb">
+      <li class="active">Home | Schedule</li>
+    </ol>
+  </div>
+
+  <ul class="pager btn-sm navbar-form" style="text-align: center">
+    <li class="previous"><a href="#">&laquo; Previous</a></li>
+    <li>                
+      <div class="form-group">
+        <input id="date-input" type="text" class="form-control" placeholder="2014-05-12">
+      </div>
+    </li>
+    <li class="next"><a href="#">Next &raquo;</a></li>
+  </ul>
+
+  <table class="table table-condensed small">
+
+  <script type="text/javascript">
+    document.write("<tr>");
+    document.write("<td " + 
+      " width=60>Table</td>");
+    for(var i = 11; i < 24; i++)
+    document.write("<th width=60>" + i + ":00</th>");
+    document.write("</tr>");
+    for(var i = 0; i < 8; i++){
+        document.write("<tr class='tdd3'>")
+        document.write("<td >" + (i+1) + "</td>");
+          for(var j = 11; j < 24; j++){
+            document.write("<td id='" + (i*100+j) + "'>&nbsp;</td>");
+          }
+        document.write("</tr>");
+    }
+
+    var test = [ [0, 1, "高大月", 13, 14], [0, 1, "sunhao", 12, 13], [0,2, "gdy", 14,15], [0, 3, "pol", 15, 16], [0, 3, "pol", 23, 24], [0, 4, "pol", 17, 18], [0,1,"小开", 11, 12], [3, 1, "风唱红", 11, 12]];
+
+    for(var i = 0; i < test.length; i++){
+        for(var j = 11; j < 24; j++){
+          var obj = document.getElementById(test[i][0] * 100 + j);
+          if(test[i][3] <= j && test[i][4] > j){
+              //obj.className = "tdd";
+              obj.abbr = test[i][1];
+              obj.innerText = test[i][2];
+              //data-toggle='modal' data-target='#myModal'
+              //obj.data.toggle="modal";
+              obj.setAttribute("data-toggle", "modal");
+              obj.setAttribute("data-target", "#myModal");
+              obj.setAttribute("onclick", "orderinfo("+(test[i][0]*100+j)+")");
+          }
+
+          if(j > 11 && obj.abbr == document.getElementById(test[i][0] * 100 + j-1).abbr){
+              obj.innerText = "";
+              obj.style = "border-left: none";
+          }              
+
+          if(j < 23 && document.getElementById(test[i][0] * 100 + j + 1).abbr == obj.abbr)
+              document.getElementById(test[i][0] * 100 + j+1).innerText = "";
+        }
+    }
+
+    //for(var i = 11; i < 24; i++)
+    //document.write("<th width=70>" + i + "</th>");
+    //document.write("</tr>");
+    for(var i = 0; i < 8; i++){
+        //document.write("<tr class='tdd'>")
+          //var check = true;
+          for(var j = 11; j < 23; j++){
+            var obj = document.getElementById(i*100+j);
+            var obj2 = document.getElementById(i*100+j+1);
+          
+
+
+              if(obj.abbr == "" && j < 22)
+                  continue;
+        
+              if(j == 11 && obj.abbr != "")
+                obj.className = "tdd";
+
+              if(j>11 && document.getElementById(i*100+j-1).abbr == "" && obj.abbr != ""){
+                obj.className = "tdd";
+              }
+
+              if(obj.abbr == obj2.abbr){
+                if(obj.className == "tdd" || obj.className == "tdd2")
+                    obj2.className = obj.className+"c";
+                else
+                    obj2.className = obj.className;
+                 
+              }
+              else if(obj2.abbr != ""){
+                if(obj.className == "tdd" || obj.className == "tddc")
+                  obj2.className = "tdd2";
+                else
+                    obj2.className = "tdd";
+              } 
+              
+          }
+        //document.write("</tr>");
+    }
+    </script>
+  </table>
+    
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel">Order Info</h4>
+        </div>
+        <div class="modal-body" id="modalbody">
+          <div class="row">
+            <div class="col-md-3">User: <strong  id="user"></strong></div>
+            <div class="col-md-3">Nums: <strong  id="nums"></strong></div>
+            <div class="col-md-3">Table: <strong  id="table"></strong></div>
+            <div class="col-md-3">Time: <strong  id="time"></strong></div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-3">Menu: </div>
+            <div class="col-md-9"> <div class="alert alert-success" id="menu"></div></div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">Price: <span style="color:red" id="price">162.8</span> RMB</div>
+          </div>
+        </div> <!-- modal-body -->
+      </div> <!-- modal-content -->
+    </div> <!-- modal-dialog -->
+  </div> <!-- modal -->
+
+  <script>
+    function orderinfo(e) {
+          document.getElementById("user").innerText =  document.getElementById(e).innerText;
+          document.getElementById("nums").innerText =  3;
+          document.getElementById("table").innerText =  document.getElementById(e).abbr;
+          document.getElementById("time").innerText =  "11-13";
+          document.getElementById("menu").innerText =  "宫保鸡丁＊2   鱼香肉丝  3   娃娃鱼  3   松仁玉米＊1 糯香排骨＊1 红烧肉＊1 皮蛋瘦肉粥＊1 米饭＊1";
+    }
+
+    $(document).ready(function () {
+      $('#date-input').datepicker({
+        format: 'yyyy-mm-dd'
+      });
+    });
+  </script>
+</div>
+<% include footer %>

@@ -3,6 +3,7 @@ var path = require('path');
 var async = require('async');
 var mkdirp = require('mkdirp');
 var config = require('./config');
+var util = require('./utils/util');
 var api_routes = require('./api/routes');
 var web_routes = require('./web/routes');
 
@@ -23,8 +24,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(session({
-  secret: config.session_secret,
-  cookie: { secure: true }
+  secret: config.session_secret
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -35,7 +35,8 @@ web_routes(app);
 // error handlers
 app.use(function (err, req, res, next) {
   if (req.xhr) {
-    res.send(500, { error: 'Something blew up!' });
+    console.error(err.stack);
+    res.send(500, util.showError('unexpected error'));
   } else {
     next(err);
   }

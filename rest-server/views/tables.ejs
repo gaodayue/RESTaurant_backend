@@ -1,0 +1,39 @@
+<% include header %>
+<div id="main" class="container">
+  <div class="row">
+    <ol class="breadcrumb">
+      <li><a href="#">Home</a></li>
+      <li class="active">Tables</li>
+    </ol>
+  </div>
+
+  <section class="data-editor">
+    <ul class="data-editor-header">
+      <li>Table Number</li>
+      <li>Capacity</li>
+    </ul>
+    <div class="data-editor-row">
+      <input type="text" class="data-editor-input" placeholder="table number" name="tbl_number" value="1">
+      <input type="number" class="data-editor-input" placeholder="capacity" name="tbl_capacity" value="2">
+      <a class="data-editor-remove">
+        <span class="glyphicon glyphicon-remove"></span>
+      </a>
+    </div>
+    <div class="data-editor-row">
+      <input type="text" class="data-editor-input" placeholder="table number" name="tbl_number" value="2">
+      <input type="number" class="data-editor-input" placeholder="capacity" name="tbl_capacity" value="4">
+      <a class="data-editor-remove">
+        <span class="glyphicon glyphicon-remove"></span>
+      </a>
+    </div>
+    <div class="data-editor-row">
+      <input type="text" class="data-editor-input" placeholder="table number" name="tbl_number">
+      <input type="number" class="data-editor-input" placeholder="capacity" name="tbl_capacity">
+    </div>
+    <ul class="data-editor-footer">
+      <li><button class="btn btn-primary">Save</button></li>
+      <li><button class="btn btn-default">Reset</button></li>
+    </ul>
+  </section>
+</div>
+<% include footer %>
