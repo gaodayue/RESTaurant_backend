@@ -95,7 +95,7 @@ router.get('/nearby', function(req, res) {
 router.get('/show/:RESTID', function(req, res) {
   var restaurantId = req.params.RESTID;
   var data, query;
-  if (!_.isNumber(restaurantId))
+  if(!restaurantId)
     res.json(400, util.showError('invalid restaurant ID'));
   else{
     async.waterfall([
@@ -151,7 +151,7 @@ router.get('/search', function(req, res) {
   var keyword = req.param('keyword');
   var page = req.param('page');
   if(!page) page = 1;
-  if(!keyword || !_.isString(keyword)) res.json(400, util.showError('invalid parameter keyword!'));
+  if(!keyword) res.json(400, util.showError('invalid parameter keyword!'));
   else {
     async.waterfall([
       function(callback){
