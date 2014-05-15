@@ -88,11 +88,11 @@ exports.invitations_rules = {
 	'restaurant_id': [
 		{
 			'rule': 'required',
-			'error': 'Missing Invitation ID'
+			'error': 'Missing restaurant ID'
 		},
 		{
 			'rule': 'int',
-			'error': 'Invitation ID has to be an integer'
+			'error': 'Restaurant ID has to be an integer'
 		}
 	],
 	'request_date': [
