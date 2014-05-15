@@ -184,7 +184,7 @@ router.post('/create', util.checkAuthCust, function(req, res) {
   // TODO: implement transaction
   // INSERT orders, order_items, invitations (this is the correct order)
   // need to change current method!
-  var invitation = req.body;
+  var invitation = req.body.content;
   var data;
   // validate input first
   async.waterfall([
