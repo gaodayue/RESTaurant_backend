@@ -43,7 +43,9 @@ exports.checkAuthCust = function (req, res, next) {
     token = req.param('access_token');
   if(req.body.access_token)
     token = req.body.access_token;
-  if(!id || !token) res.json(400, {result : 'error', error_message : 'missing authentication detail'})
+  //if(!id || !token) res.json(400, {result : 'error', error_message : 'missing authentication detail'})
+  if(!id) res.json(400, {result: 'error', error_message: 'missing customer_id'});
+  else if(!token) res.json(400, {result: 'error', error_message: 'missing access_token'});
   redisClient.get('cust:'+id, function (err, result) {
     if (err)
       res.json(500, {result : 'error', error_message : 'internal server error'});
