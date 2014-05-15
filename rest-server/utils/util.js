@@ -46,20 +46,22 @@ exports.checkAuthCust = function (req, res, next) {
   //if(!id || !token) res.json(400, {result : 'error', error_message : 'missing authentication detail'})
   if(!id) res.json(400, {result: 'error', error_message: 'missing customer_id'});
   else if(!token) res.json(400, {result: 'error', error_message: 'missing access_token'});
-  redisClient.get('cust:'+id, function (err, result) {
-    if (err)
-      res.json(500, {result : 'error', error_message : 'internal server error'});
-    if (result === null)
-      res.json(401, {result : 'error', error_message : 'unauthorized'});
-    else {
-      if (result === token) {
-        res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-        next();
-      }
-      else 
+  else {
+    redisClient.get('cust:'+id, function (err, result) {
+      if (err)
+        res.json(500, {result : 'error', error_message : 'internal server error'});
+      if (result === null)
         res.json(401, {result : 'error', error_message : 'unauthorized'});
-    }
-  });
+      else {
+        if (result === token) {
+          res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+          next();
+        }
+        else 
+          res.json(401, {result : 'error', error_message : 'unauthorized'});
+      }
+    });
+  }
 };
 
 exports.createHash = function (p) {
