@@ -7,11 +7,12 @@ var express = require('express'),
     util = require('../utils/util'),
     db = require('../utils/database'),
     connection = db.connection(),
-    async = require('async');
+    async = require('async'),
+    passport = require('passport');
 
-router.get('/', util.checkAuthCust, function(req, res) {
+router.get('/', passport.authenticate('bearer', { session: false }), function(req, res) {
   var query, sql;
-  var custId = req.param('customer_id');
+  var custId = req.user.cust_id;
   var onlySent = (req.param('only_sent') ? true : false); // if onlySent > WHERE inv_is_host LIKE 'true'
   var onlyRcv = (req.param('only_received') ? true : false); // if onlyRcv > WHERE inv_is_host LIKE 'false'
   if(onlySent || onlyRcv) {
@@ -59,128 +60,123 @@ router.get('/', util.checkAuthCust, function(req, res) {
   }
 });
 
-router.get('/:INVID', util.checkAuthCust, function(req, res) {
+router.get('/:INVID', passport.authenticate('bearer', { session: false }), function(req, res) {
   var query;
   var invitationId = req.params.INVID;
-  var custId = req.param('customer_id');
-  if(!custId)
-    res.json(400, util.showError('missing customer ID'));
-  else {
-    async.waterfall([
-      function(callback){
-        var sql = 'SELECT cust_id, cust_name, inv_order_id, inv_is_host, inv_created_time, inv_status '
-                +'FROM invitations, customer_accounts WHERE inv_cust_id = cust_id and inv_id = ?';
-        query = connection.query(sql, invitationId, function(err, result){
-          if(err)
-            callback('error');
-          else {
-            if(typeof result !== 'undefined' && result.length > 0){
-              var data = {
-                'inv_id' : invitationId,
-                'created_time' : result[0].inv_created_time,
-                'participants' : []
-              };
-              for(var i in result){
-                var participant = {
-                  'cust_id' : result[i].cust_id,
-                  'name' : result[i].cust_name
-                };
-                if(result[i].inv_is_host)
-                  participant.is_host = result[i].inv_is_host;
-                else
-                  participant.inv_status = result[i].inv_status;
-                data.participants.push(participant);
-              }
-              callback(null, data, result[0].inv_order_id);
-            }
-            else
-              callback('not exist');
-          }
-        });
-      },
-      function(arg1, arg2, callback){
-        var sql = 'SELECT rest_id, rest_name, rest_address, rest_geo_location, rest_pic, rest_pic_thumb, cust_id, '
-              +'cust_name, o_id, o_totalprice, o_num_people, o_request_date, o_request_period, '
-              +'o_schedule_info, o_status, o_created_time, o_updated_time '
-              +'FROM orders, restaurants, customer_accounts '
-              +'WHERE o_rest_id = rest_id and o_cust_id = cust_id and o_id = ?';
-        query = connection.query(sql, arg2, function(err, result){
-          if(err)
-            callback('error');
-          else{
-            if(typeof result !== 'undefined' && result.length > 0){
-              var order = {
-                'o_id' : result[0].o_id,
-                'restaurant' : {
-                  'rest_id' : result[0].rest_id,
-                  'name' : result[0].rest_name,
-                  'address' : result[0].rest_address,
-                  'geo_location' : {
-                    'longitude' : result[0].rest_geo_location.x,
-                    'latitude' : result[0].rest_geo_location.y
-                  },
-                  'pic' : result[0].rest_pic,
-                  'pic_thumb' : result[0].rest_pic_thumb,
-                },
-                'customer' : {
-                  'cust_id' : result[0].cust_id,
-                  'name' : result[0].cust_name
-                },
-                'dishes' : [],
-                'total_price' : result[0].o_totalprice,
-                'num_people' : result[0].o_num_people,
-                'request_date' : result[0].o_request_date,
-                'request_period' : result[0].o_request_period,
-                'schedule_info' : result[0].o_schedule_info,
-                'status': result[0].o_status,
-                'created_time' : result[0].o_created_time,
-                'updated_time' : result[0].o_updated_time
-              };
-              arg1.order = order;
-              callback(null, arg1);
-            }
-            else
-              callback('not exist');
-          }
-        });
-      },
-      function(arg1, callback){ 
-      // Get the Dishes from order_items
-      var sql = 'SELECT oitem_name, oitem_price, oitem_quantity FROM order_items WHERE oitem_order_id = ?';
-      query = connection.query(sql, JSON.stringify(arg1.order.o_id), function(err, result){
+  async.waterfall([
+    function(callback){
+      var sql = 'SELECT cust_id, cust_name, inv_order_id, inv_is_host, inv_created_time, inv_status '
+              +'FROM invitations, customer_accounts WHERE inv_cust_id = cust_id and inv_id = ?';
+      query = connection.query(sql, invitationId, function(err, result){
         if(err)
           callback('error');
-        else{
-          for(var i in result){
+        else {
+          if(typeof result !== 'undefined' && result.length > 0){
             var data = {
-              //'d_id' : ? 
-              'name' : result[i].oitem_name,
-              'price' : result[i].oitem_price,
-              'quantity' : result[i].oitem_quantity
+              'inv_id' : invitationId,
+              'created_time' : result[0].inv_created_time,
+              'participants' : []
             };
-            arg1.order.dishes.push(data);
+            for(var i in result){
+              var participant = {
+                'cust_id' : result[i].cust_id,
+                'name' : result[i].cust_name
+              };
+              if(result[i].inv_is_host)
+                participant.is_host = result[i].inv_is_host;
+              else
+                participant.inv_status = result[i].inv_status;
+              data.participants.push(participant);
+            }
+            callback(null, data, result[0].inv_order_id);
           }
-          callback(null, arg1);
+          else
+            callback('not exist');
         }
       });
     },
-    ], function(err, result){
-      if(err){
-        if(err === 'error')
-          res.json(400, util.showError('unexpected error'));
-        else if(err === 'not exist')
-          res.json(400, util.showError('something not exist yet'));
-        else
-          res.json(400, util.showError(err))
-      }
-      else {
-        res.json(200, result);
+    function(arg1, arg2, callback){
+      var sql = 'SELECT rest_id, rest_name, rest_address, rest_geo_location, rest_pic, rest_pic_thumb, cust_id, '
+            +'cust_name, o_id, o_totalprice, o_num_people, o_request_date, o_request_period, '
+            +'o_schedule_info, o_status, o_created_time, o_updated_time '
+            +'FROM orders, restaurants, customer_accounts '
+            +'WHERE o_rest_id = rest_id and o_cust_id = cust_id and o_id = ?';
+      query = connection.query(sql, arg2, function(err, result){
+        if(err)
+          callback('error');
+        else{
+          if(typeof result !== 'undefined' && result.length > 0){
+            var order = {
+              'o_id' : result[0].o_id,
+              'restaurant' : {
+                'rest_id' : result[0].rest_id,
+                'name' : result[0].rest_name,
+                'address' : result[0].rest_address,
+                'geo_location' : {
+                  'longitude' : result[0].rest_geo_location.x,
+                  'latitude' : result[0].rest_geo_location.y
+                },
+                'pic' : result[0].rest_pic,
+                'pic_thumb' : result[0].rest_pic_thumb,
+              },
+              'customer' : {
+                'cust_id' : result[0].cust_id,
+                'name' : result[0].cust_name
+              },
+              'dishes' : [],
+              'total_price' : result[0].o_totalprice,
+              'num_people' : result[0].o_num_people,
+              'request_date' : result[0].o_request_date,
+              'request_period' : result[0].o_request_period,
+              'schedule_info' : result[0].o_schedule_info,
+              'status': result[0].o_status,
+              'created_time' : result[0].o_created_time,
+              'updated_time' : result[0].o_updated_time
+            };
+            arg1.order = order;
+            callback(null, arg1);
+          }
+          else
+            callback('not exist');
+        }
+      });
+    },
+    function(arg1, callback){ 
+    // Get the Dishes from order_items
+    var sql = 'SELECT oitem_name, oitem_price, oitem_quantity FROM order_items WHERE oitem_order_id = ?';
+    query = connection.query(sql, JSON.stringify(arg1.order.o_id), function(err, result){
+      if(err)
+        callback('error');
+      else{
+        for(var i in result){
+          var data = {
+            //'d_id' : ? 
+            'name' : result[i].oitem_name,
+            'price' : result[i].oitem_price,
+            'quantity' : result[i].oitem_quantity
+          };
+          arg1.order.dishes.push(data);
+        }
+        callback(null, arg1);
       }
     });
-  }
+  },
+  ], function(err, result){
+    if(err){
+      if(err === 'error')
+        res.json(400, util.showError('unexpected error'));
+      else if(err === 'not exist')
+        res.json(400, util.showError('something not exist yet'));
+      else
+        res.json(400, util.showError(err))
+    }
+    else {
+      res.json(200, result);
+    }
+  });
 });
 
-router.post('/create', util.checkAuthCust, function(req, res) {
+router.post('/create', passport.authenticate('bearer', { session: false }), function(req, res) {
   // TODO: implement transaction
   // INSERT orders, order_items, invitations (this is the correct order)
   // need to change current method!
@@ -393,10 +389,10 @@ router.post('/create', util.checkAuthCust, function(req, res) {
   });
 });
 
-router.post('/accept/:INVID', util.checkAuthCust, function(req, res) {
+router.post('/accept/:INVID', passport.authenticate('bearer', { session: false }), function(req, res) {
   var query;
   var invitationId = req.params.INVID;
-  var custId = req.body.customer_id;
+  var custId = req.user.cust_id;
   if(!custId)
     res.json(400, util.showError('missing customer ID'));
   else {
@@ -523,10 +519,10 @@ router.post('/accept/:INVID', util.checkAuthCust, function(req, res) {
   }
 });
 
-router.post('/deny/:INVID', util.checkAuthCust, function(req, res) {
+router.post('/deny/:INVID', passport.authenticate('bearer', { session: false }), function(req, res) {
   var query;
   var invitationId = req.params.INVID;
-  var custId = req.body.customer_id;
+  var custId = req.user.cust_id;
   if(!custId)
     res.json(400, util.showError('missing customer ID'));
   else {

@@ -1,68 +1,9 @@
-var crypto = require('crypto'),
-    redis = require('redis'),
-    redisClient = redis.createClient();
+var crypto = require('crypto');
+
+// res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
 
 exports.PAGING_VALUE = 20;
 exports.ADMIN_TOKEN = '';
-
-exports.checkAuthRest = function (req, res, next) {
-  var id, token;
-  if(req.params.RESTID)
-    id = req.params.RESTID;
-  if(req.param('r_id'))
-    id = req.param('r_id');
-  if(req.body.r_id)
-    id = req.body.r_id;
-  if(req.param('access_token'))
-    token = req.param('access_token');
-  if(req.body.access_token)
-    token = req.body.access_token;
-  redisClient.get('rest:'+id, function (err, result) {
-    if (err)
-      res.json(500, {result : 'error', error_message : 'internal server error'});
-    if (result === null)
-      res.json(401, {result : 'error', error_message : 'unauthorized'});
-    else {
-      if (result === token) {
-        res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-        next();
-      }
-      else 
-        res.json(401, {result : 'error', error_message : 'unauthorized'});
-    }
-  });
-};
-
-exports.checkAuthCust = function (req, res, next) {
-  var id, token;
-  if(req.param('customer_id'))
-    id = req.param('customer_id');
-  if(req.body.customer_id)
-    id = req.body.customer_id;
-  if(req.param('access_token'))
-    token = req.param('access_token');
-  if(req.body.access_token)
-    token = req.body.access_token;
-  //if(!id || !token) res.json(400, {result : 'error', error_message : 'missing authentication detail'})
-  if(!id) res.json(400, {result: 'error', error_message: 'missing customer_id'});
-  else if(!token) res.json(400, {result: 'error', error_message: 'missing access_token'});
-  else {
-    redisClient.get('cust:'+id, function (err, result) {
-      if (err)
-        res.json(500, {result : 'error', error_message : 'internal server error'});
-      if (result === null)
-        res.json(401, {result : 'error', error_message : 'unauthorized'});
-      else {
-        if (result === token) {
-          res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-          next();
-        }
-        else 
-          res.json(401, {result : 'error', error_message : 'unauthorized'});
-      }
-    });
-  }
-};
 
 exports.createHash = function (p) {
   var salt = crypto.randomBytes(128)//.toString('base64');

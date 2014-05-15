@@ -7,5 +7,6 @@ module.exports = {
   pic_original_dir: path.join(upload_dir, 'restaurants/original'),
   pic_thumbnail_dir: path.join(upload_dir, 'restaurants/thumbnail'),
 
-  session_secret: 'putagoodsecrethere'
+  session_secret: 'putagoodsecrethere',
+  jwt_secret: 'anothergoodsecret'
 };

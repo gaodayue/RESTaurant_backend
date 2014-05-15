@@ -6,8 +6,8 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "express": "~4.0.0",
-    "mysql": ">=2.2.0",
+    "express" : "~4.0.0",
+    "mysql" : ">=2.2.0",
     "async" : ">=0.8.0",
     "underscore" : ">=1.6.0",
     "node-uuid" : ">=1.4.1",
@@ -17,6 +17,9 @@
     "baidupush" : "latest",
     "google-places" : "latest",
     "redis" : "latest",
+    "jwt-simple" : "latest",
+    "passport" : "latest",
+    "passport-http-bearer" : "latest",
     "iz": ">=0.4.1",
     "morgan": "~1.0.0",
     "cookie-parser": "~1.0.1",

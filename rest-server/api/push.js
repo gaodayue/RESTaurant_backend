@@ -4,7 +4,8 @@ var express = require('express'),
     util = require('../utils/util'),
     db = require('../utils/database'),
     connection = db.connection(),
-    async = require('async');
+    async = require('async'),
+    passport = require('passport');
 
 var APIKEY = 'hwfeocSIPlgKTasIuARPREnS';
 var SECRETKEY = 'AUC9iIPVi5h87xPMuovh7nBiiuwuCUVg';
@@ -33,11 +34,11 @@ var SECRETKEY = 'AUC9iIPVi5h87xPMuovh7nBiiuwuCUVg';
   });
 });*/
 
-router.post('/register', util.checkAuthCust, function (req, res) {
+router.post('/register', passport.authenticate('bearer', { session: false }), function (req, res) {
   // TODO : update customer_accounts.push_id 
   var post = req.body;
   var pushId = req.body.push_id;
-  var custId = req.body.customer_id;
+  var custId = req.user.cust_id;
   if(!custId) res.json(400, util.showError('missing the customer_id'));
   else if(!pushId) res.json(400, util.showError('missing the push_id'));
   else {
@@ -51,8 +52,9 @@ router.post('/register', util.checkAuthCust, function (req, res) {
   }
 });
 
-router.post('/send', util.checkAuthCust, function (req, res) {
+router.post('/send', passport.authenticate('bearer', { session: false }), function (req, res) {
   // TODO : send specific push notification to targeted user
+  var custId = req.user.cust_id;
   var post = req.body;
   res.send('tbd');
 });

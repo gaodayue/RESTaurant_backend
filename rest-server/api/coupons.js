@@ -7,17 +7,18 @@ var express = require('express'),
     util = require('../utils/util'),
     db = require('../utils/database'),
     connection = db.connection(),
-    async = require('async');
+    async = require('async'),
+    passport = require('passport');
 
-router.get('/', /*util.checkAuthCust, */function(req, res) {
+router.get('/', passport.authenticate('bearer', { session: false }), function(req, res) {
 	res.send('tbd');
 });
 
-router.post('/create', /*util.checkAuthCust, */function(req, res) {
+router.post('/create', passport.authenticate('bearer', { session: false }), function(req, res) {
 	res.send('tbd');	
 });
 
-router.post('/send', /*util.checkAuthCust, */function(req, res) { // push notification to user which used to eat at the specified restaurant.
+router.post('/send', passport.authenticate('bearer', { session: false }), function(req, res) { // push notification to user which used to eat at the specified restaurant.
 	res.send('tbd');	
 });
 

@@ -10,7 +10,10 @@ var express = require('express'),
     async = require('async'),
     uuid = require('node-uuid'),
     redis = require('redis'),
-    redisClient = redis.createClient();
+    redisClient = redis.createClient()
+    jwt = require('jwt-simple'),
+    config = require('../config'),
+    passport = require('passport');
 
 router.get('/', function(req, res) {
   var query;
@@ -70,13 +73,15 @@ router.post('/signup', function(req, res) {
           } 
         });
       },
-      function(arg1, arg2, callback){
+      function(arg1, arg2, callback){ // arg1: cust_id, arg2: cust_name
+        var t = uuid.v1();
         var data = {
           'cust_id' : arg1,
           'cust_name' : arg2,
-          'cust_access_token' : uuid.v1()
+          //'cust_access_token' : arg1+':'+uuid.v1()
+          'cust_access_token' : jwt.encode({cust_id:arg1, token:t}, config.jwt_secret)
         };
-        redisClient.set('cust:'+data.cust_id, data.cust_access_token, function(err, result) {
+        redisClient.set('cust:'+data.cust_id, t, function(err, result) {
           if(err) callback('redis error');
           else callback(null, data);
         });
@@ -116,22 +121,24 @@ router.post('/signin', function(req, res) {
           } 
         });
       },
-      function(arg1, callback){
-        // compare arg1 which is stored hash with the hashed account.password
+      function(arg1, callback){ //arg1 : customer_accounts object
+        // compare arg1.cust_password which is stored hash with the hashed account.password
         var test = util.checkHash(account.password, arg1.cust_password);
         if(!test)
           callback('invalid');
         else
           callback(null, arg1);
       },
-      function(arg1, callback){
+      function(arg1, callback){ //arg1 : customer_accounts object
         // var accessToken = redis.get
+        var t = uuid.v1();
         var data = {
           'cust_id' : arg1.cust_id,
           'cust_name' : arg1.cust_name,
-          'cust_access_token' : uuid.v1()
+          //'cust_access_token' : arg1.cust_id+':'+uuid.v1()
+          'cust_access_token' : jwt.encode({cust_id:arg1.cust_id, token:t}, config.jwt_secret)
         };
-        redisClient.set('cust:'+data.cust_id, data.cust_access_token, function(err, result) {
+        redisClient.set('cust:'+data.cust_id, t, function(err, result) {
           if(err) callback('redis error');
           else callback(null, data);
         });
@@ -147,8 +154,8 @@ router.post('/signin', function(req, res) {
   }
 });
 
-router.post('/logout', util.checkAuthCust, function (req, res) {
-  var custId = req.body.customer_id;
+router.post('/logout', passport.authenticate('bearer', { session: false }), function (req, res) {
+  var custId = req.user.cust_id;
   if(!custId) res.json(400, util.showError('missing customer ID'));
   else {
     redisClient.del('cust:'+custId, function(err, result) {
