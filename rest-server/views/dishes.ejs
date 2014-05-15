@@ -12,13 +12,6 @@
       <li>Food Name</li>
       <li>Price</li>
     </ul>
-    <!-- <div class="data-editor-row">
-      <input type="text" class="data-editor-input" placeholder="food name" name="dish_name" value="Big Mac">
-      <input type="text" class="data-editor-input" placeholder="food price" name="dish_price" value="20">
-      <a class="data-editor-remove">
-        <span class="glyphicon glyphicon-remove"></span>
-      </a>
-    </div> -->
     <div class="data-editor-row">
       <input type="text" class="data-editor-input" placeholder="food name" name="dish_name">
       <input type="text" class="data-editor-input" placeholder="food price" name="dish_price">
@@ -28,6 +21,7 @@
       <!-- <li><button class="btn btn-default">Reset</button></li> -->
     </ul>
   </section>
+  
   <script type="text/javascript">
 function addDish(name, price) {
   var lastRow = $('.data-editor-row:last');
@@ -52,7 +46,8 @@ function loadDishesFromServer() {
       $.each(data, function (index, dish) {
         addDish(dish.name, dish.price);
       });
-    });
+    })
+    .fail(showError);
 }
 
 function bindEventToLastRow() {
@@ -92,22 +87,8 @@ $(document).ready(function () {
       contentType: "application/json; charset=utf-8",
       data: JSON.stringify(newDishes)
     })
-    .done(function () {
-      noty({
-        layout: 'topCenter',
-        type: 'success',
-        text: 'success',
-        timeout: 1000
-      });
-    })
-    .fail(function () {
-      noty({
-        layout: 'topCenter',
-        type: 'warning',
-        text: 'something goes wrong',
-        timeout: 1000
-      });
-    })
+    .done(showSuccess)
+    .fail(showError)
     .always(function () {
       btn.button('reset');
     });

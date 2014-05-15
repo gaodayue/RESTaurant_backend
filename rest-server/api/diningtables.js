@@ -1,137 +1,71 @@
 var express = require('express'),
     router = express.Router(),
-    iz = require('iz'),
-    are = iz.are,
-    validators = iz.validators,
-    validationRules = require('../utils/validation_rules'),
     util = require('../utils/util'),
     db = require('../utils/database'),
     connection = db.connection(),
-    async = require('async');
+    async = require('async'),
+    _ = require('underscore');
 
-router.get('/', function(req, res){
-  var restaurantId = req.param('r_id');
-  if(!restaurantId)
-    res.json(400, util.showError('missing restaurant ID'));
-  else {
-    async.waterfall([
-      function(callback){
-        var query = connection.query('SELECT * FROM dining_tables WHERE tbl_rest_id = ?', restaurantId, function(err, result){
-          if(err)
-            callback('error');
-          else {
-            if(typeof result !== 'undefined' && result.length > 0){
-              var data = [];
-              for(var i in result){
-                var t = {
-                  'tbl_id' : result[i].tbl_id,
-                  'capacity' : result[i].tbl_capacity
-                };
-                data.push(t);
-              }
-              callback(null, data);
-            }
-            else
-              callback('not exist');
-          }
-        });
-      }
-    ], function(err, result){
-      if(err){
-          if(err === 'error')
-            res.json(400, util.showError('unexpected error'));
-          else
-            res.json(400, util.showError(err));
-        }
-        else {
-          res.json(200, result);
-        }
-    });
+// return list of tables
+router.get('/', function (req, res) {
+  if (!req.session.manager) {
+    return res.json(401, util.showError('please login first'));
   }
+  var rest_id = req.session.manager.rest_id;
+  var sql = 'SELECT tbl_id, tbl_display_number as display_number, tbl_capacity as capacity ' +
+            'FROM dining_tables WHERE tbl_rest_id=? ORDER BY tbl_display_number';
+  connection.query(sql, [rest_id], function (err, result) {
+    if (err) throw err;
+    return res.json(result);
+  });
 });
 
-router.post('/create', function(req, res){
-  var num = req.body.num;
-  var capacity = req.body.capacity;
-  var restaurantId = req.body.r_id;
-  if(!restaurantId)
-    res.json(400, util.showError('missing restaurant ID'));
-  else if(!num)
-    res.json(400, util.showError('missing number of table'));
-  else if(!capacity)
-    res.json(400, util.showError('missing table capacity'));
-  else {
-    async.waterfall([
-      function(callback){
-        var data = [];
-        for (var i = 0; i < num; i++){ // creating array for bulk insert
-          // tbl_rest_id, tbl_capacity, tbl_display_order
-          var a = [restaurantId, capacity, 0];
-          data.push(a);
-        }
-        query = connection.query('INSERT INTO dining_tables (tbl_rest_id, tbl_capacity, tbl_display_order) VALUES ?', [data], function(err, result){
-          if(err)
-            callback('error');
-          else{
-            callback(null, 'ok');
-          }
-        });
-      }
-    ], function(err, result){
-        if(err){
-          if(err === 'error')
-            res.json(400, util.showError('unexpected error'));
-          else
-            res.json(400, util.showError(err));
-        }
-        else {
-          res.json(200, result);
-        }
-    });
-  } 
-});
-
-router.post('/delete/:TBLID', function(req, res){
-  var tableId = req.params.TBLID;
-  var restaurantId = req.body.r_id;
-  if(!restaurantId)
-    res.json(400, util.showError('missing restaurant ID'));
-  if(!tableId)
-    res.json(400, util.showError('missing table ID'));
-  else {
-    async.waterfall([
-      function(callback){
-        query = connection.query('DELETE FROM dining_tables WHERE tbl_id = ? AND tbl_rest_id = ?', [tableId, restaurantId], function(err, result){
-          if(err)
-            callback('error');
-          else{
-            callback(null, 'ok');
-          }
-        });
-      }
-    ], function(err, result){
-        if(err){
-          if(err === 'error')
-            res.json(400, util.showError('unexpected error'));
-          else
-            res.json(400, util.showError(err));
-        }
-        else {
-          res.json(200, result);
-        }
-    });
+// update list of tables
+router.post('/', function (req, res) {
+  if (!req.session.manager) {
+    return res.json(401, util.showError('please login first'));
   }
-});
+  var rest_id = req.session.manager.rest_id;
+  // TODO validation on body here
+  var tables = req.body;
 
-router.post('/reorder', function(req, res){
-  // TODO : WORK ON IT!
-  var order = req.body.order.split('|'); // new order of table id joined by '|'
-  var restaurantId = req.body.r_id;
-  if(!restaurantId)
-    res.json(400, util.showError('missing restaurant ID'));
-  else {
+  // TODO transaction!!!
+  var tasks = [];
+  _.each(tables, function (table) {
+    if (table.tbl_id) { // an update task
+      tasks.push(function (callback) {
+        var sql = 'UPDATE dining_tables ' +
+                  'SET tbl_display_number=?, tbl_capacity=? WHERE tbl_id=?';
+        connection.query(sql, [table.display_number, table.capacity, table.tbl_id], function (err, result) {
+          if (err) return callback(err);
+          callback(null, table);
+        });
+      });
     
-  }
+    } else {  // an insertion task
+      tasks.push(function (callback) {
+        var sql = "INSERT INTO dining_tables SET ?";
+        connection.query(
+          sql,
+          {
+            tbl_rest_id: rest_id,
+            tbl_display_number: table.display_number,
+            tbl_capacity: table.capacity
+          },
+          function (err, result) {
+            if (err) return callback(err);
+            table.tbl_id = result.insertId;
+            callback(null, table);
+          });
+      });
+    }
+  }); // done set up tasks for each table
+
+  // run task in series
+  async.series(tasks, function (err, results) {
+    if (err) throw err;
+    return res.json(results);
+  });
 });
 
 module.exports = router;
