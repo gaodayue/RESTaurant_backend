@@ -41,6 +41,7 @@ router.get('/', function(req, res) {
 });
 
 router.post('/signup', function(req, res) {
+  // TODO : have some admin access_token to authorize creating a new customer account
   var account = req.body;
   var query;
   // validate input first
