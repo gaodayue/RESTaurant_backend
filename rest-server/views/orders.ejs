@@ -1,0 +1,96 @@
+<% include header %>
+<div id="main" class="container" style="padding:30px 50px 0 50px">
+  <button onclick="initorder([ ['001', 'cloud',4,11,13,'5-13',[ ['鲇鱼',1], ['wahaha', 2] ],'judgeing' ], ['10001', 'nero', 10, 12, 15, '5-14',[ ['ww',1],['qqq',2] ], 'Judgeing'] ])">haha</button>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Order Judge</h4>
+      </div>
+      <div class="modal-body" id="modalbody">
+        <div class="row">
+          <div class="col-md-6">ID: <strong  id="id"></strong></div>
+          <div class="col-md-6">Date: <strong  id="date"></strong></div>
+        </div>
+
+        <div class="row">
+
+          <div class="col-md-6">Attes: <strong  id="attes"></strong></div>
+          <div class="col-md-6">
+            Table: <select >
+                <option>满江红(12)</option>
+                <option>12(4)</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+             </div>
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      <button type="button" onclick="acorder()" data-dismiss="modal" class="btn btn-success">Accept</button>
+      </div>
+      </div> <!-- modal-body -->
+    </div> <!-- modal-content -->
+  </div> <!-- modal-dialog -->
+</div> <!-- modal -->
+
+
+
+<script type="text/javascript">
+function initorder(orders){
+  var tab = $('<table class="table table-bordered"></table>');
+  var thead = $('<thead><tr><th>ID</th><th>User</th><th >Attends</th><th >Time</th><th >Date</th><th >Dish</th><th >State</th><th >Verify</th></tr></thead>');
+  thead.appendTo(tab);
+  var tbody = $('<tbody></tbody>');
+  //alert(orders.length);
+  for(var j = 0; j < orders.length; j++){
+    var tr = $('<tr></tr>');
+    for(var i = 0; i <= 6; i++){
+        if(i != 3)
+        var td = $('<td>'+ orders[j][i] +'</td>');
+        else{
+          var td = $('<td>'+orders[j][i]+'-'+orders[j][i+1]+'</td>');
+          i++;
+        }
+        td.appendTo(tr);
+    }
+   
+    var td = $('<td id="'+orders[j][0]+'state">'+orders[j][7]+'</td>');
+    td.appendTo(tr);
+
+    td = $('<td id="'+orders[j][0]+'verify"><button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-warning btn-sm">Judge</button> <button type="button" class="btn btn-info btn-sm" >Reject</button></td>');
+     $(td).find('button').get(0).setAttribute("onclick", "getorder('"+orders[j][0]+"','"+orders[j][5]+"',"+orders[j][2]+")");
+     $(td).find('button').get(1).setAttribute("onclick", "reject('"+orders[j][0]+"')");
+    td.appendTo(tr);
+    tr.appendTo(tbody);
+  }
+  tbody.appendTo(tab);
+  $('#main').empty();
+  tab.appendTo($('#main'));
+  //alert();
+}
+
+
+function getorder(id,user,nums){
+  $('#date').html(user);
+  $('#id').html(id);
+  $('#attes').html(nums);
+}
+
+//accept order
+function acorder(){
+  document.getElementById($('#id').html()+'state').innerText = 'Accept';
+  var obj = document.getElementById($('#id').html()+'verify');
+  $(obj).find('button').attr('disabled','disabled');//.get(0).setAttribute("disabled", "disabled");
+}
+
+function reject(id){
+  document.getElementById(id+'state').innerText = 'Reject';
+  $(document.getElementById(id+'verify')).find('button').attr('disabled', 'disabled');//get(1).setAttribute("disabled", "disabled");
+}
+</script>
+<% include footer %>

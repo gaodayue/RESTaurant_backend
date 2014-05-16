@@ -5,7 +5,7 @@ router.get('/', function (req, res) {
   if (!req.session.manager) {
     return res.redirect('/manager/login');
   }
-  res.render('dishes', { title: 'RESTaurant | Dishes' });
+  res.render('orders', { title: 'RESTaurant | Orders' });
 });
 
 module.exports = router;
