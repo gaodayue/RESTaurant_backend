@@ -36,7 +36,7 @@ router.get('/', function(req, res) {
         if(err === 'error')
           res.json(500, util.showError('unexpected error'));
         else if(err === 'not exist')
-          res.json(500, util.showError('no account exist yet'));
+          res.json(200, []);
       }
       else
         res.json(200, result);

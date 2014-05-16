@@ -59,7 +59,7 @@ router.get('/nearby', passport.authenticate('bearer', { session: false }), funct
     ], function(err, result){
         if(err){
           if(err === 'not exist')
-            res.json(400, util.showError('no restaurants!'));
+            res.json(200, []);
           else
             res.json(400, util.showError('unexpected error'));
         }
@@ -140,7 +140,7 @@ router.get('/show/:RESTID', passport.authenticate('bearer', { session: false }),
         if(err === 'error')
           res.json(400, util.showError('unexpected error'));
         else if(err === 'not exist')
-          res.json(400, util.showError('Restaurant does not exist'));
+          res.json(200, []);
       }
       else
         res.json(200, result);
@@ -181,7 +181,7 @@ router.get('/search', passport.authenticate('bearer', { session: false }), funct
     ], function(err, result){
         if(err){
           if(err === 'not exist')
-            res.json(400, util.showError('no restaurants!'));
+            res.json(200, []);
           else
             res.json(400, util.showError('unexpected error'));
         }
