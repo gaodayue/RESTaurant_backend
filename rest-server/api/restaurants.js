@@ -114,7 +114,7 @@ router.get('/show/:RESTID', passport.authenticate('bearer', { session: false }),
         });
       },
       function(arg1, callback){
-        query = connection.query('SELECT * FROM dishes WHERE d_rest_id = ?', restaurantId, function(err, dishRow) {
+        query = connection.query('SELECT d_id, d_name AS name, d_price AS price FROM dishes WHERE d_rest_id = ?', restaurantId, function(err, dishRow) {
           if (err)
             callback('error');
           else {

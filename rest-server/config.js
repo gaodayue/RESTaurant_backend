@@ -8,5 +8,7 @@ module.exports = {
   pic_thumbnail_dir: path.join(upload_dir, 'restaurants/thumbnail'),
 
   session_secret: 'putagoodsecrethere',
-  jwt_secret: 'anothergoodsecret'
+  jwt_secret: 'anothergoodsecret',
+  baidu_apikey: 'hwfeocSIPlgKTasIuARPREnS',
+  baidu_secretkey: 'AUC9iIPVi5h87xPMuovh7nBiiuwuCUVg'
 };

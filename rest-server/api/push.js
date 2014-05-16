@@ -3,16 +3,14 @@ var express = require('express'),
     BaiduPush = require('baidupush')
     util = require('../utils/util'),
     db = require('../utils/database'),
+    config = require('../config'),
     connection = db.connection(),
     async = require('async'),
     passport = require('passport');
 
-var APIKEY = 'hwfeocSIPlgKTasIuARPREnS';
-var SECRETKEY = 'AUC9iIPVi5h87xPMuovh7nBiiuwuCUVg';
-
 /*router.get('/', function(req, res) {
 	var body = req.body;
-	var baiduPushClient = BaiduPush.buildBaseApi({apiKey: APIKEY, secretKey: SECRETKEY});
+	var baiduPushClient = BaiduPush.buildBaseApi({apiKey: config.baidu_apikey, secretKey: config.baidu_secretkey});
 
   var queryBody = {};
   queryBody.push_type = 1;
