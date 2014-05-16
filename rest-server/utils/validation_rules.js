@@ -101,10 +101,16 @@ exports.invitations_rules = {
 			'error': 'Missing Invitation Request Date'
 		}
 	],
-	'request_period': [
+	'start_time': [
 		{
 			'rule': 'required',
-			'error': 'Missing Invitation Request Period'
+			'error': 'Missing Invitation Order Start Time'
+		}
+	],
+	'end_time': [
+		{
+			'rule': 'required',
+			'error': 'Missing Invitation Order End Time'
 		}
 	],
 	'customer_ids': [

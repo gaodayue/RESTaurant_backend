@@ -118,13 +118,14 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
         for(var i in invitation.dishes){
           totalPrice += (invitation.dishes[i].price * invitation.dishes[i].quantity);
         }
-        var orders = {//FIXME add o_start_time and o_end_time
+        var orders = {
           'o_rest_id' : invitation.restaurant_id,
           'o_cust_id' : custId,
           'o_totalprice' : totalPrice,
           'o_num_people' : invitation.customer_ids.length,
           'o_request_date' : invitation.request_date,
-          'o_request_period' : invitation.request_period,
+          'o_start_time' : invitation.start_time,
+          'o_end_time' : invitation.end_time,
           'o_schedule_info' : null,
           'o_status' : 1
         };

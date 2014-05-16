@@ -34,7 +34,8 @@ var ORDER_STATE = {
 //   "total_price": "54",
 //   "num_people": 2,
 //   "request_date": "2014-05-05",
-//   "request_period": 5,
+//   "start_time": 17,
+//   "end_time": 19,
 //   "schedule_info": null,
 //   "status": 1,
 //   "created_time": "2014-05-05 11:20:33",
@@ -42,7 +43,7 @@ var ORDER_STATE = {
 // }
 function _getOrders (whereClause, orderBy, callback) {
   var sql = 'SELECT o_id, o_rest_id, o_cust_id, o_totalprice, o_num_people,' +
-                  ' o_request_date, o_request_period, o_schedule_info,' + 
+                  ' o_request_date, o_start_time, o_end_time, o_schedule_info,' +
                   ' o_status, o_created_time, o_updated_time,' +
                   ' cust_name, cust_phoneno ' +
             'FROM orders ' +
@@ -93,7 +94,8 @@ function _getOrders (whereClause, orderBy, callback) {
           "total_price":    order.o_totalprice,
           "num_people":     order.o_num_people,
           "request_date":   order.o_request_date,
-          "request_period": order.o_request_period,
+          "start_time":     order.o_start_time,
+          "end_time":       order.o_end_time,
           "schedule_info":  order.o_schedule_info,
           "status":         order.o_status,
           "created_time":   order.o_created_time,
