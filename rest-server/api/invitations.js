@@ -24,7 +24,7 @@ router.get('/', passport.authenticate('bearer', { session: false }), function(re
     }
   }
   else {
-    sql = 'SELECT * FROM invitations WHERE inv_cust_id = ? AND 1=2';
+    sql = 'SELECT * FROM invitations WHERE inv_cust_id = ?';
   }
   if(!custId)
     res.json(400, util.showError('missing customer ID'));
