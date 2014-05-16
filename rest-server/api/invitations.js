@@ -9,7 +9,9 @@ var express = require('express'),
     connection = db.connection(),
     async = require('async'),
     passport = require('passport'),
-    _ = require('underscore');
+    _ = require('underscore'),
+    BaiduPush = require('baidupush'),
+    config = require('../config');
 
 var InvitationDAO = require('../model/Invitation');
 
@@ -184,6 +186,58 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
     },
     // 4. get invitation details to return
     InvitationDAO.getInvitationById,
+    // 5. get participants cust_push_id
+    function (invitation, callback) {
+      var customerIds = [];
+      _.each(invitation.participants, function (res) {
+        if(res.is_host === 'false')
+          customerIds.push(res.cust_id);
+      });
+      connection.query('SELECT cust_push_id FROM customer_accounts WHERE cust_id IN (?)', [customerIds], function (err, result) {
+        if(err)
+          callback(err);
+        else{
+          if(typeof result !== 'undefined' && result.length > 0){
+            var pushIds = [];
+            for(var i in result){
+              if(result[i].cust_push_id)
+                pushIds.push(result[i].cust_push_id);
+            }
+            callback(null, invitation, pushIds);
+          }
+        }
+      });
+    },
+    // 6. send push notification to participants
+    function (invitation, pushIds, callback) {
+      if(pushIds.length > 0){
+        var baiduPushClient = BaiduPush.buildBaseApi({apiKey: config.baidu_apikey, secretKey: config.baidu_secretkey});
+
+        var queryBody = {};
+        queryBody.push_type = 1;
+        queryBody.messages = {
+          title: 'new invitation',
+          description: 'let\'s have dinner together',
+          custom_content : {
+            key1: 'value1',
+            key2: 'value2'
+          }
+        };
+        //queryBody.user_id = '729915559012261118'; // TODO : fill the user ID from database
+        queryBody.msg_keys = 'invitation';
+        queryBody.message_type = 1; // 0:toast, 1:notification
+
+        _.each(pushIds, function (res) {
+          // send each push here one by one
+          queryBody.user_id = res;
+          /*baiduPushClient.pushMsg(queryBody, function (err, body) {
+            
+          });*/
+          console.log(queryBody);
+        });
+      }
+      callback(null, invitation);
+    }
   ],
   function (err, result) {
     if (err) {
