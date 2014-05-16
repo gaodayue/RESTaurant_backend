@@ -146,7 +146,7 @@ module.exports = {
 
             invitation.participants.push({
               'cust_id':   inv_item.cust_id,
-              'cust_name': inv_item.cust_name,
+              'name': inv_item.cust_name,
               'is_host':   inv_item.inv_is_host,
               'inv_status': status
             });
