@@ -40,7 +40,7 @@ router.get('/', passport.authenticate('bearer', { session: false }), function(re
       tasks.push(function (callback) {
         InvitationDAO.getInvitationById(res.inv_id, function (err, invitation) {
           if (err) return callback(err);
-          delete invitation.order;
+          delete invitation.order.dishes;
           callback(null, invitation);
         });
       });
