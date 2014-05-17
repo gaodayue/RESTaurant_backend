@@ -71,7 +71,7 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
   // TODO: implement transaction
   // INSERT orders, order_items, invitations (this is the correct order)
   // need to change current method!
-  var invitation = req.body.content;
+  var invitation = req.body;
   var custId = req.user.cust_id;
   var data;
   async.waterfall([

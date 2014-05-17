@@ -25,7 +25,7 @@ function isCustomerInInvitation(dao, invitationId, custId, hostOnly) {
   };
 }
 
-function checkAllParticipantsAccept (invitation, callback) {
+function checkNumberOfAccept (invitation, callback) {
   var unacceptedPerson = _.find(invitation.participants, function (participant) {
     return !participant.is_host && participant.inv_status != 'accepted';
   });
@@ -33,6 +33,10 @@ function checkAllParticipantsAccept (invitation, callback) {
     callback('not all participants accept the invitation!');
   else
     callback(null, invitation);
+
+  // get number of people accept -> from invitation.participants.inv_status
+  // compare this number with the num_people in order
+  // if !equal, update the num_people in order
 }
 
 module.exports = {
@@ -42,7 +46,7 @@ module.exports = {
       // 1. determine if the customer is the host of the invitation
       isCustomerInInvitation(this, invitationId, custId, true),
       // 2. determine if all participants have accepted the invitation
-      checkAllParticipantsAccept,
+      checkNumberOfAccept,
       // 3. update order state to booked
       function (invitation, callback) {
         var order = invitation.order;
