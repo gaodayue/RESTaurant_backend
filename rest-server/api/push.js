@@ -17,12 +17,12 @@ router.get('/send/:ID', function(req, res) {
     var queryBody = {};
     queryBody.push_type = 1;
     queryBody.messages = {
-      title: 'new invitation',
-      description: 'let\'s have dinner together',
-      custom_content : {
+      title: 'spam!',
+      description: 'spamspamspam',
+      /*custom_content : {
         invitation_id: 1,
         key2: 'value2'
-      }
+      }*/
     };
     queryBody.user_id = result[0].cust_push_id;
 
