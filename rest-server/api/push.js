@@ -6,13 +6,14 @@ var express = require('express'),
     config = require('../config'),
     connection = db.connection(),
     async = require('async'),
-    passport = require('passport');
+    passport = require('passport'),
+    uuid = require('node-uuid');
 
-router.get('/', function(req, res) {
+router.get('/send/:ID', function(req, res) {
   var body = req.body;
   var baiduPushClient = BaiduPush.buildBaseApi({apiKey: config.baidu_apikey, secretKey: config.baidu_secretkey});
 
-  connection.query('select cust_push_id from customer_accounts where cust_id = 6', function(err, result){
+  connection.query('select cust_push_id from customer_accounts where cust_id = ?', req.params.ID, function(err, result){
     var queryBody = {};
     queryBody.push_type = 1;
     queryBody.messages = {
@@ -25,7 +26,7 @@ router.get('/', function(req, res) {
     };
     queryBody.user_id = result[0].cust_push_id;
 
-    queryBody.msg_keys = 'invitation';
+    queryBody.msg_keys = uuid.v4(); // just random message key to be unique
     queryBody.message_type = 1; // 0:toast, 1:notification
 
     baiduPushClient.pushMsg(queryBody, function (err, body) {
@@ -55,11 +56,11 @@ router.post('/register', passport.authenticate('bearer', { session: false }), fu
   }
 });
 
-router.post('/send', passport.authenticate('bearer', { session: false }), function (req, res) {
+/*router.post('/send', passport.authenticate('bearer', { session: false }), function (req, res) {
   // TODO : send specific push notification to targeted user
   var custId = req.user.cust_id;
   var post = req.body;
   res.send('tbd');
-});
+});*/
 
 module.exports = router;
