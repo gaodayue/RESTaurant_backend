@@ -189,7 +189,7 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
     InvitationDAO.getInvitationById,
     // 5. get participants cust_push_id
     function (invitation, callback) {
-      var customerIds = [];
+      var customerIds = [-1]; // default value to prevent error
       _.each(invitation.participants, function (res) {
         if(res.is_host === 'false')
           customerIds.push(res.cust_id);
@@ -198,14 +198,14 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
         if(err)
           callback(err);
         else{
+          var pushIds = [];
           if(typeof result !== 'undefined' && result.length > 0){
-            var pushIds = [];
             for(var i in result){
               if(result[i].cust_push_id)
                 pushIds.push(result[i].cust_push_id);
             }
-            callback(null, invitation, pushIds);
           }
+          callback(null, invitation, pushIds);
         }
       });
     },
@@ -233,7 +233,7 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
           baiduPushClient.pushMsg(queryBody, function (err, body) {
             if (err) console.log(err);
           });
-          //console.log(queryBody);
+          console.log(queryBody);
         });
       }
       callback(null, invitation);
@@ -260,6 +260,15 @@ router.post('/book/:INVID', passport.authenticate('bearer', { session: false }),
   });
 });
 
+router.post('/cancel/:INVID', passport.authenticate('bearer', { session: false }), function (req, res) {
+  var invitationId = req.params.INVID;
+  var custId = req.user.cust_id;
+
+  InvitationDAO.cancel(invitationId, custId, function (err, invitation) {
+    if (err) return res.json(400, util.showError(err));
+    res.json(200, invitation);
+  });
+});
 
 router.post('/accept/:INVID', passport.authenticate('bearer', { session: false }), function(req, res) {
   var invitationId = req.params.INVID;

@@ -26,17 +26,22 @@ function isCustomerInInvitation(dao, invitationId, custId, hostOnly) {
 }
 
 function checkNumberOfAccept (invitation, callback) {
-  var unacceptedPerson = _.find(invitation.participants, function (participant) {
-    return !participant.is_host && participant.inv_status != 'accepted';
-  });
-  if (unacceptedPerson)
-    callback('not all participants accept the invitation!');
-  else
-    callback(null, invitation);
-
   // get number of people accept -> from invitation.participants.inv_status
   // compare this number with the num_people in order
   // if !equal, update the num_people in order
+  var accepted = _.find(invitation.participants, function (participant) {
+    return participant.inv_status === 'accepted';
+  });
+  if (accepted.length != invitation.order.num_people) {
+    // update the num_people in order
+    var sql = 'UPDATE orders SET o_num_people = ? WHERE o_id = ?';
+    connection.query(sql, [accepted.length, invitation.order.o_id], function (err, results) {
+      if (err) return callback(err);
+      callback(null, invitation);
+    });
+  }
+  else
+    callback(null, invitation);
 }
 
 module.exports = {
@@ -62,6 +67,31 @@ module.exports = {
       if (err) return callback(err);
       // success, change the order status and return
       invitation.order.status = OrderDAO.STATE.BOOKING;
+      callback(null, invitation);
+    }); // end waterfall
+  },
+
+  cancel: function (invitationId, custId, callback) {
+    async.waterfall([
+      // 1. determine if the customer is the host of the invitation
+      isCustomerInInvitation(this, invitationId, custId, true),
+      // 2. determine if all participants have accepted the invitation
+      //checkNumberOfAccept,
+      // 3. update order state to booked
+      function (invitation, callback) {
+        var order = invitation.order;
+        OrderDAO.changeState(
+          order.o_id, order.restaurant.rest_id, OrderDAO.STATE.CANCELED,
+          function (err, results) {
+            if (err) return callback(err);
+            callback(null, invitation);
+          }
+        );
+      }],
+    function (err, invitation) {
+      if (err) return callback(err);
+      // success, change the order status and return
+      invitation.order.status = OrderDAO.STATE.CANCELED;
       callback(null, invitation);
     }); // end waterfall
   },
