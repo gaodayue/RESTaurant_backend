@@ -86,7 +86,7 @@ function makeScheduleTable(tables, orders) {
 
   // 2. put orders onto the schedule table
   $.each(orders, function (index, order) {
-    for (var time = order.start_time; time <= order.end_time; time++) {
+    for (var time = order.start_time; time < order.end_time; time++) {
       var td = $('#' + order.table_number + '_' + time);
       if (!td) continue;
 
