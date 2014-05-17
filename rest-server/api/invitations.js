@@ -11,7 +11,8 @@ var express = require('express'),
     passport = require('passport'),
     _ = require('underscore'),
     BaiduPush = require('baidupush'),
-    config = require('../config');
+    config = require('../config'),
+    uuid = require('node-uuid');
 
 var InvitationDAO = require('../model/Invitation');
 
@@ -219,11 +220,11 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
           title: 'new invitation',
           description: 'let\'s have dinner together',
           custom_content : {
-            key1: 'value1',
+            invitation_id: invitation.inv_id,
             key2: 'value2'
           }
         };
-        queryBody.msg_keys = 'invitation';
+        queryBody.msg_keys = uuid.v4(); // random msg_key to be unique
         queryBody.message_type = 1; // 0:toast, 1:notification
 
         _.each(pushIds, function (res) {

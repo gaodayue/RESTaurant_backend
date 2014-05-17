@@ -20,7 +20,7 @@ router.get('/send/:ID', function(req, res) {
       title: 'new invitation',
       description: 'let\'s have dinner together',
       custom_content : {
-        key1: 'value1',
+        invitation_id: 1,
         key2: 'value2'
       }
     };
