@@ -3,6 +3,17 @@ body { padding-top: 70px; background-color: #f1eee7; }
 #footer { border-top: 1px dashed #ccc; padding-top: 5px; color: #999; margin-top: 10px; }
 .pagination { margin-top: 0; }
 
+#schedule table tbody tr {
+  background-color: #F8F8F0;
+}
+#schedule td.used {
+  background-color: rgba(52, 191, 30, 0.5);
+  cursor: pointer;
+}
+#schedule td.separator {
+  border-left: 7px solid #bf0c14;
+}
+
 /*------------------------
  * styles for login page
  *------------------------*/
