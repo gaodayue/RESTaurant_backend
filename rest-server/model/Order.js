@@ -36,14 +36,14 @@ var ORDER_STATE = {
 //   "request_date": "2014-05-05",
 //   "start_time": 17,
 //   "end_time": 19,
-//   "schedule_info": null,
+//   "table_number": 0,
 //   "status": 1,
 //   "created_time": "2014-05-05 11:20:33",
 //   "updated_time": "2014-05-05 11:20:33"
 // }
 function _getOrders (whereClause, orderBy, callback) {
   var sql = 'SELECT o_id, o_rest_id, o_cust_id, o_totalprice, o_num_people,' +
-                  ' o_request_date, o_start_time, o_end_time, o_schedule_info,' +
+                  ' o_request_date, o_start_time, o_end_time, o_table_number,' +
                   ' o_status, o_created_time, o_updated_time,' +
                   ' cust_name, cust_phoneno ' +
             'FROM orders ' +
@@ -96,7 +96,7 @@ function _getOrders (whereClause, orderBy, callback) {
           "request_date":   order.o_request_date,
           "start_time":     order.o_start_time,
           "end_time":       order.o_end_time,
-          "schedule_info":  order.o_schedule_info,
+          "table_number":   order.o_table_number,
           "status":         order.o_status,
           "created_time":   order.o_created_time,
           "updated_time":   order.o_updated_time
@@ -153,13 +153,14 @@ module.exports = {
     });
   },
 
-  // sinceDate and untilDate should be a string in 'yyyy-mm-dd' format.
-  getOrders: function (restId, isPending, sinceDate, untilDate, callback) {
+  // pendingOnly and bookedOnly cannot both be true
+  // sinceDate and untilDate are optional, and should be in 'yyyy-mm-dd' format.
+  getOrders: function (restId, pendingOnly, bookedOnly, sinceDate, untilDate, callback) {
     var whereClause = 'o_rest_id = ' + connection.escape(restId);
-    if (isPending)
+    if (pendingOnly)
       whereClause  += ' AND o_status = ' + connection.escape(ORDER_STATE.BOOKING);
-    else
-      whereClause  += ' AND o_status > ' + connection.escape(ORDER_STATE.BOOKING);
+    if (bookedOnly)
+      whereClause  += ' AND o_status = ' + connection.escape(ORDER_STATE.BOOKING_SUCCEED);
 
     if (sinceDate)
       whereClause  += ' AND o_request_date >= ' + connection.escape(sinceDate);

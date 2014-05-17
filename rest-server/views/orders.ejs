@@ -1,39 +1,86 @@
 <% include header %>
-<div id="main" class="container" style="padding:30px 50px 0 50px">
-  <button onclick="initorder([ ['001', 'cloud',4,11,13,'5-13',[ ['鲇鱼',1], ['wahaha', 2] ],'judgeing' ], ['10001', 'nero', 10, 12, 15, '5-14',[ ['ww',1],['qqq',2] ], 'Judgeing'] ])">haha</button>
+<div id="main" class="container">
+  <div class="row">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      <li class="active">Orders</li>
+    </ol>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-8">
+      <!-- <div class="alert alert-info">There is no pending orders.</div> -->
+      <table id="pending-orders" class="table table-bordered table-hover order-table" style="display: none">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Customer</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Dishes</th>
+            <th>Total</th>
+            <th>&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody><!-- content load by AJAX --></tbody>
+      </table>
+    </div>
+  </div>
+
 </div>
 <!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="order-model" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="myModalLabel">Order Judge</h4>
-      </div>
+        <h4 class="modal-title" id="order-model-id"></h4>
+      </div> <!-- modal-header -->
       <div class="modal-body" id="modalbody">
         <div class="row">
-          <div class="col-md-6">ID: <strong  id="id"></strong></div>
-          <div class="col-md-6">Date: <strong  id="date"></strong></div>
-        </div>
-
-        <div class="row">
-
-          <div class="col-md-6">Attes: <strong  id="attes"></strong></div>
           <div class="col-md-6">
-            Table: <select >
-                <option>满江红(12)</option>
-                <option>12(4)</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-            </select>
-             </div>
+            <div class="dishes">
+              <ul class="lines" id="order-model-dishes">
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <td>Customer</td>
+                  <td id="order-model-customer"></td>
+                </tr>
+                <tr>
+                  <td>Phone</td>
+                  <td id="order-model-phone"></td>
+                </tr>
+                <tr>
+                  <td>Date</td>
+                  <td id="order-model-date"></td>
+                </tr>
+                <tr>
+                  <td>Time</td>
+                  <td id="order-model-time"></td>
+                </tr>
+                <tr>
+                  <td>Table</td>
+                  <td id="order-model-table">
+                    <!-- <select >
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select> -->
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      <button type="button" onclick="acorder()" data-dismiss="modal" class="btn btn-success">Accept</button>
-      </div>
       </div> <!-- modal-body -->
+      <div class="modal-footer">
+        <!-- <button type="button" data-dismiss="modal" class="btn btn-success">Accept</button>
+        <button type="button" data-dismiss="modal" class="btn btn-warning">Deny</button> -->
+      </div> <!-- modal-footer -->
     </div> <!-- modal-content -->
   </div> <!-- modal-dialog -->
 </div> <!-- modal -->
@@ -41,45 +88,64 @@
 
 
 <script type="text/javascript">
-function initorder(orders){
-  var tab = $('<table class="table table-bordered"></table>');
-  var thead = $('<thead><tr><th>ID</th><th>User</th><th >Attends</th><th >Time</th><th >Date</th><th >Dish</th><th >State</th><th >Verify</th></tr></thead>');
-  thead.appendTo(tab);
-  var tbody = $('<tbody></tbody>');
-  //alert(orders.length);
-  for(var j = 0; j < orders.length; j++){
-    var tr = $('<tr></tr>');
-    for(var i = 0; i <= 6; i++){
-        if(i != 3)
-        var td = $('<td>'+ orders[j][i] +'</td>');
-        else{
-          var td = $('<td>'+orders[j][i]+'-'+orders[j][i+1]+'</td>');
-          i++;
-        }
-        td.appendTo(tr);
-    }
-   
-    var td = $('<td id="'+orders[j][0]+'state">'+orders[j][7]+'</td>');
-    td.appendTo(tr);
 
-    td = $('<td id="'+orders[j][0]+'verify"><button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-warning btn-sm">Judge</button> <button type="button" class="btn btn-info btn-sm" >Reject</button></td>');
-     $(td).find('button').get(0).setAttribute("onclick", "getorder('"+orders[j][0]+"','"+orders[j][5]+"',"+orders[j][2]+")");
-     $(td).find('button').get(1).setAttribute("onclick", "reject('"+orders[j][0]+"')");
-    td.appendTo(tr);
-    tr.appendTo(tbody);
-  }
-  tbody.appendTo(tab);
-  $('#main').empty();
-  tab.appendTo($('#main'));
-  //alert();
+var global_orders;
+
+// add one order item to the order table
+function addOrder(order) {
+  var ul = $('<ul>');
+  $.each(order.dishes, function (index, dish) {
+    ul.append($('<li>').text(dish.name + ' - ' + dish.quantity));
+  });
+
+  var btn = $('<a>Handle</a>').click(function (e) {
+    e.preventDefault();
+    var orderId = $(this).parent().attr('data-oid');
+    var order = findOrderById(global_orders, orderId);
+    showOrderModel(order);
+  });
+
+  $('<tr>')
+    .append($('<td>').text(order.o_id))
+    .append($('<td>').text(order.customer.name))
+    .append($('<td>').text(new Date(order.request_date).yyyymmdd()))
+    .append($('<td>').text(describeTime(order.start_time, order.end_time)))
+    .append($('<td>').addClass('dishes').append(ul))
+    .append($('<td>').html('<span class="label label-info">$' + order.total_price + '</span>'))
+    .append($('<td>').attr('data-oid', order.o_id).append(btn))
+    .appendTo($('#pending-orders tbody'));
 }
 
+function loadPendingOrders() {
+  var param = {
+    'pending_only': 'true',
+    'since': (new Date()).yyyymmdd()
+  };
 
-function getorder(id,user,nums){
-  $('#date').html(user);
-  $('#id').html(id);
-  $('#attes').html(nums);
+  $.get('/api/orders', param)
+    .done(function (orders) {
+      if (orders.length == 0) {
+        return $('<div class="alert alert-info">There is no pending orders.</div>').insertBefore($('#pending-orders'));
+      }
+      // show order table
+      global_orders = orders;
+      $.each(orders, function (index, order) {
+        addOrder(order);
+      });
+      $('#pending-orders').show();
+    })
+    .fail(showError);
 }
+
+$(document).ready(function () {
+  loadPendingOrders();
+});
+
+
+
+
+
+
 
 //accept order
 function acorder(){

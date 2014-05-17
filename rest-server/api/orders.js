@@ -1,9 +1,5 @@
 var express = require('express'),
     router = express.Router(),
-    iz = require('iz'),
-    are = iz.are,
-    validators = iz.validators,
-    validationRules = require('../utils/validation_rules'),
     util = require('../utils/util'),
     async = require('async');
 
@@ -16,12 +12,13 @@ router.get('/', function (req, res) {
   }
   var rest_id = req.session.manager.rest_id;
 
-  if (!req.query.types)
-    return res.json(400, util.showError('require "types" param'));
+  if (req.query.pending_only === 'true' && req.query.booked_only === 'true')
+    return res.json(400, util.showError('pending_only and booked_only cannot both be true!'));
 
   OrderDAO.getOrders(
     rest_id,
-    req.query.types == 'pending',
+    req.query.pending_only === 'true',
+    req.query.booked_only === 'true',
     req.query.since,
     req.query.until,
     function (err, orders) {

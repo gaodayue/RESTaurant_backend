@@ -128,7 +128,7 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
           'o_request_date' : invitation.request_date,
           'o_start_time' : invitation.start_time,
           'o_end_time' : invitation.end_time,
-          'o_schedule_info' : null,
+          'o_table_number' : 0,
           'o_status' : 1
         };
         connection.query('INSERT INTO orders SET ?', orders, function(err, result) {
@@ -156,8 +156,7 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
                 for(var i in invitation.customer_ids){ // creating array for bulk insert
                   // inv_id, inv_cust_id, inv_order_id, inv_is_host, inv_status
                   var isHost = (invitation.customer_ids[i] == custId) ? 'true' : 'false';
-                  var status = (invitation.customer_ids[i] == custId) ? 'a' : 's';
-                  data.push([invitation_id, invitation.customer_ids[i], orderId, isHost, status]);
+                  data.push([invitation_id, invitation.customer_ids[i], orderId, isHost, (isHost === 'true' ? 'a' : 's')]);
                 }
                 connection.query('INSERT INTO invitations (inv_id, inv_cust_id, inv_order_id, inv_is_host, inv_status) VALUES ?', [data], function(err, result) {
                   if (err) {

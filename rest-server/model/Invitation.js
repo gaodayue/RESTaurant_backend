@@ -29,19 +29,20 @@ function checkNumberOfAccept (invitation, callback) {
   // get number of people accept -> from invitation.participants.inv_status
   // compare this number with the num_people in order
   // if !equal, update the num_people in order
-  var accepted = _.find(invitation.participants, function (participant) {
-    return participant.inv_status === 'accepted';
-  });
-  if (accepted.length != invitation.order.num_people) {
-    // update the num_people in order
-    var sql = 'UPDATE orders SET o_num_people = ? WHERE o_id = ?';
-    connection.query(sql, [accepted.length, invitation.order.o_id], function (err, results) {
-      if (err) return callback(err);
-      callback(null, invitation);
-    });
-  }
-  else
+  var num_accept = _.reduce(invitation.participants, function (acc, participant) {
+    return acc + (participant.inv_status == 'accepted' ? 1 : 0);
+  }, 0);
+
+  if (num_accept == invitation.order.num_people)
+    return callback(null, invitation);
+  
+  // update the num_people in order
+  invitation.order.num_people = num_accept;
+  var sql = 'UPDATE orders SET o_num_people = ? WHERE o_id = ?';
+  connection.query(sql, [num_accept, invitation.order.o_id], function (err, results) {
+    if (err) return callback(err);
     callback(null, invitation);
+  });
 }
 
 module.exports = {

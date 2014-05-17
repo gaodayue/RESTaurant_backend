@@ -12,8 +12,8 @@ router.get('/', function (req, res) {
     return res.json(401, util.showError('please login first'));
   }
   var rest_id = req.session.manager.rest_id;
-  var sql = 'SELECT tbl_id, tbl_display_number as display_number, tbl_capacity as capacity ' +
-            'FROM dining_tables WHERE tbl_rest_id=? ORDER BY tbl_display_number';
+  var sql = 'SELECT tbl_id, tbl_table_number as table_number, tbl_capacity as capacity ' +
+            'FROM dining_tables WHERE tbl_rest_id=? ORDER BY tbl_table_number';
   connection.query(sql, [rest_id], function (err, result) {
     if (err) throw err;
     return res.json(result);
@@ -35,8 +35,8 @@ router.post('/', function (req, res) {
     if (table.tbl_id) { // an update task
       tasks.push(function (callback) {
         var sql = 'UPDATE dining_tables ' +
-                  'SET tbl_display_number=?, tbl_capacity=? WHERE tbl_id=?';
-        connection.query(sql, [table.display_number, table.capacity, table.tbl_id], function (err, result) {
+                  'SET tbl_table_number=?, tbl_capacity=? WHERE tbl_id=?';
+        connection.query(sql, [table.table_number, table.capacity, table.tbl_id], function (err, result) {
           if (err) return callback(err);
           callback(null, table);
         });
@@ -49,7 +49,7 @@ router.post('/', function (req, res) {
           sql,
           {
             tbl_rest_id: rest_id,
-            tbl_display_number: table.display_number,
+            tbl_table_number: table.table_number,
             tbl_capacity: table.capacity
           },
           function (err, result) {

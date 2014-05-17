@@ -37,7 +37,76 @@ img.rest-img-large {
   height: 150px;
 }
 
+/*------------------------
+ * styles for order table
+ *------------------------*/
+.order-table a:hover {
+  cursor: pointer;
+}
+.order-table thead th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 0px 1px 0px #fff;
+  background: #f5f5f5;
+  background: -moz-linear-gradient(top, #f5f5f5 0%, #e2e2e2 100%);
+  background: -webkit-linear-gradient(top, #f5f5f5 0%, #e2e2e2 100%);
+  background: -ms-linear-gradient(top, #f5f5f5 0%, #e2e2e2 100%);
+  background: linear-gradient(top, #f5f5f5 0%, #e2e2e2 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f5f5', endColorstr='#e2e2e2', GradientType=0);
+}
+.order-table ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
 
+/*------------------------
+ * styles for order model
+ *------------------------*/
+#order-model .modal-footer {
+  margin: 0;
+ }
+#order-model td:first-child {
+  text-align: right;
+  font-weight: bold;
+  width: 30%;
+}
+
+#order-model .dishes {
+  position:relative;
+  background-color:#faf8e5;
+  border:1px solid #e3e3e3;
+}
+#order-model .dishes ul {
+  list-style-type:none;
+  margin: 0;
+  padding: 0;
+}
+#order-model .dishes ul.lines {
+  margin: 0px 20px 5px;
+}
+#order-model .dishes ul.lines li {
+  height:28px;
+  line-height:28px;
+  font-size:16px;
+  border-top:1px solid #f2f0df;
+  padding:0 20px;
+}
+#order-model .dishes ul.lines li:nth-child(1) {
+  text-align: center;
+  font-weight: bold;
+  color: darkGoldenrod;
+}
+#order-model .dishes ul.lines li:nth-last-child(1){
+  font-weight: bold;
+  text-align: right;
+  color: #555;
+}
+
+/*------------------------
+ * styles for data editor
+ *------------------------*/
 .data-editor-header, .data-editor-footer{
   margin: 0;
   padding: 0;
