@@ -6,6 +6,8 @@ var express = require('express'),
     async = require('async'),
     _ = require('underscore');
 
+var OrderDAO = require('../model/Order');
+
 // return list of tables
 router.get('/', function (req, res) {
   if (!req.session.manager) {
@@ -18,6 +20,65 @@ router.get('/', function (req, res) {
     if (err) throw err;
     return res.json(result);
   });
+});
+
+// get list of available tables
+router.get('/available', function (req, res) {
+  if (!req.session.manager) {
+    return res.json(401, util.showError('please login first'));
+  }
+  var rest_id = req.session.manager.rest_id;
+  // input params
+  var request_date = req.query.request_date;
+  var start_time = req.query.start_time;
+  var end_time = req.query.end_time;
+  var num_people = req.query.num_people;
+
+  async.waterfall([
+    // 1. get all tables
+    function (callback) {
+      var sql = 'SELECT tbl_id, tbl_table_number as table_number, tbl_capacity as capacity ' +
+                'FROM dining_tables WHERE tbl_rest_id=? ORDER BY tbl_table_number';
+
+      connection.query(sql, [rest_id], function (err, tables) {
+        if (err) return callback(err);
+        callback(null, tables);
+      });
+    },
+    // 2. compute available tables
+    function (tables, callback) {
+      OrderDAO.getOrders(
+        rest_id,
+        false,  // pendingOnly
+        true,   // bookedOnly
+        request_date, // sinceDate
+        request_date, // untilDate
+        function (err, orders) {
+          if (err) return callback(err);
+          var availTables = _.filter(tables, function (table) {
+            // filter table whose capacity is not enough
+            if (table.capacity < num_people)
+              return false;
+            // filter table which already has order in that request period
+            var alreadyOrdered = false;
+            _.each(orders, function (order) {
+              if (table.table_number != order.table_number) return;
+              if (order.start_time >= start_time && order.start_time < end_time)
+                alreadyOrdered = true;
+              if (order.end_time > start_time && order.end_time <= end_time)
+                alreadyOrdered = true;
+            });
+            return !alreadyOrdered;
+          });
+          callback(null, availTables);
+        });
+    }],
+  function (err, availTables) {
+    if (err)
+      return res.json(401, util.showError(err));
+    res.json(200, availTables);
+  }); // end waterfall
+
 });
 
 // update list of tables

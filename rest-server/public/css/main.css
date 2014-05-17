@@ -60,13 +60,19 @@ img.rest-img-large {
   padding: 0;
   list-style-type: none;
 }
+.order-table .label {
+  font-size: 14px;
+}
 
 /*------------------------
  * styles for order model
  *------------------------*/
+#order-model .label {
+  font-size: 14px;
+}
 #order-model .modal-footer {
   margin: 0;
- }
+}
 #order-model td:first-child {
   text-align: right;
   font-weight: bold;
