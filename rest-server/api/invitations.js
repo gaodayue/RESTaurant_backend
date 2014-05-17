@@ -230,9 +230,9 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
         _.each(pushIds, function (res) {
           // send each push here one by one
           queryBody.user_id = res;
-          /*baiduPushClient.pushMsg(queryBody, function (err, body) {
-            
-          });*/
+          baiduPushClient.pushMsg(queryBody, function (err, body) {
+            if (err) console.log(err);
+          });
           //console.log(queryBody);
         });
       }
