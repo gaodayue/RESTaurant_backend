@@ -4,6 +4,7 @@ var db = require('../utils/database');
 var connection = db.connection();
 var util = require('../utils/util');
 var dateformat = require('dateformat');
+var _ = require('underscore');
 
 // list all coupons
 router.get('/', function (req, res) {
@@ -78,38 +79,39 @@ router.post('/push/:CID', function (req, res) {
   }
   var couponId = req.params.CID;
   var restId = req.session.manager.rest_id;
-  var coupon = req.body;
+  var restName = req.session.manager.rest_name;
+  var couponTitle = req.body.coupon_title;
 
   var customerIds = [];
-  var queryBody = {};
+  var queryBody = {
+    'messages': {
+      'title': restName + ' just posted a coupon',
+      'description': couponTitle,
+      'custom_content': {
+        'restaurant_id': restId,
+        'type': 'coupon'
+      }
+    }
+  };
   async.series([
-    // fill customer ids
+    // send to all customers FIXME better to just send to target customers
     function (callback) {
-      _.each(invitation.participants, function (participant) {
-        if(participant.is_host === 'false')
-          customerIds.push(participant.cust_id);
+      connection.query('SELECT cust_id FROM customer_accounts', function (err, results) {
+        if (err) return callback(err);
+        _.each(results, function (customer) {
+          customerIds.push(customer.cust_id);
+        });
+        callback(null, 'ok');
       });
-      callback(null, 'ok');
-    },
-    // fill query body
-    function (callback) {
-      queryBody.messages = {
-        title: invitation.order.restaurant.name + ' just posted a coupon',
-        description: coupon.title,
-        custom_content : {
-          restaurant_id: restId,
-          type: 'coupon'
-        }
-      };
-      callback(null, 'ok');
     },
     // send push!
     function (callback) {
       var totalPush = util.sendPush(queryBody, customerIds);
       callback(null, 'ok');
     }
-  ], function (err, result) {
-    callback(null, invitation);
+  ], function (err, results) {
+    if (err) return res.json(400, util.showError(err));
+    res.json(200, 'ok');
   });
 });
 

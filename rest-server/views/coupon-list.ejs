@@ -30,11 +30,14 @@
   		<% coupons.forEach( function (coupon) { %>
   		<tr id="<%= coupon.c_id %>">
   			<td><%= coupon.c_id %></td>
-  			<td><%= coupon.c_title %></td>
+  			<td class="coupon_title"><%= coupon.c_title %></td>
   			<td><%= coupon.c_message %></td>
-			<td><%= dateformat(new Date(coupon.c_start_date),'yyyy-mm-dd') %></td>
-			<td><%= dateformat(new Date(coupon.c_end_date), 'yyyy-mm-dd') %></td>
-			<td><button class="btn btn-info" data-toggle="modal" data-target="#myModal" onclick="editcoupon(<%= coupon.c_id %>)">Edit</button></td>
+  			<td><%= dateformat(new Date(coupon.c_start_date),'yyyy-mm-dd') %></td>
+  			<td><%= dateformat(new Date(coupon.c_end_date), 'yyyy-mm-dd') %></td>
+  			<td>
+            <button class="btn btn-info" data-toggle="modal" data-target="#myModal" onclick="editcoupon(<%= coupon.c_id %>)">Edit</button>
+            <button class="btn btn-info push-btn" data-loading-text="waiting...">Push</button>
+        </td>
   		</tr>
   		<% } )%>
   	</tbody>
@@ -78,16 +81,29 @@
   }
 
   $(document).ready(function () {
-      $('#start_time').datepicker({
-        format: 'yyyy-mm-dd'
-      });
-
-      $('#end_time').datepicker({
-        format: 'yyyy-mm-dd'
-      });
-
-    
+    $('#start_time').datepicker({
+      format: 'yyyy-mm-dd'
     });
+
+    $('#end_time').datepicker({
+      format: 'yyyy-mm-dd'
+    });
+
+    $('.push-btn').click(function (e) {
+      e.preventDefault();
+      var btn = $(this);
+      var couponId = btn.closest('tr').attr('id');
+      var couponTitle = btn.closest('tr').find('td[class="coupon_title"]').text();
+
+      btn.button('loading');
+      $.post('/coupons/push/' + couponId, { coupon_title: couponTitle })
+        .done(showSuccess)
+        .fail(showError)
+        .always(function () {
+          btn.button('reset');
+        });
+    });    
+  });
     
   </script>
 
