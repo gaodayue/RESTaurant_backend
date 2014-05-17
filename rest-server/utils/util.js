@@ -1,6 +1,8 @@
 var crypto = require('crypto'),
     db = require('./database'),
-    connection = db.connection,
+    BaiduPush = require('baidupush'),
+    config = require('../config'),
+    connection = db.connection(),
     async = require('async'),
     uuid = require('node-uuid'),
     _ = require('underscore');
@@ -87,10 +89,8 @@ exports.sendPush = function (queryBody, custIds) { // will return number of succ
           baiduPushClient.pushMsg(queryBody, function (err, body) {
             if (err) console.log(err);
             else {
-              console.log(body);
-              // check for each push, if != 0 then increment
-              // for now we just increment everytime one push is made regardless of its result
-              count++;
+              //console.log(body);
+              if(body.response_params.success_amount === 1) count++;
             }
           });
         });
