@@ -77,7 +77,7 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
   var data;
   async.waterfall([
     // 1. input validation
-    function(callback){
+    function (callback){
       var errorMessage;
       var rules = are(validationRules.invitations_rules);
       if (!rules.validFor(invitation)) {
@@ -99,7 +99,7 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
         callback(null, 'ok');
     },
     // 2. get the next inv_id to use
-    function(arg1, callback){
+    function (arg1, callback){
       console.log('get latest invitation id');
       connection.query('SELECT inv_id FROM invitations ORDER BY inv_created_time DESC LIMIT 1', function(err, result){
         if(err)
@@ -113,7 +113,7 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
       });
     },
     // 3. insert into orders, order_items, invitations table
-    function(invitation_id, callback){
+    function (invitation_id, callback){
       // insert with transaction here
       connection.beginTransaction(function(err) {
         if (err) { return callback(err); }
@@ -217,8 +217,8 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
         var queryBody = {};
         queryBody.push_type = 1;
         queryBody.messages = {
-          title: 'new invitation',
-          description: 'let\'s have dinner together',
+          title: 'New invitation from '+invitation.order.customer.name,
+          description: 'Let\'s eat at '+invitation.order.restaurant.name,
           custom_content : {
             invitation_id: invitation.inv_id,
             key2: 'value2'
