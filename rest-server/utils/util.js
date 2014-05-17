@@ -89,8 +89,9 @@ exports.sendPush = function (queryBody, custIds) { // will return number of succ
           baiduPushClient.pushMsg(queryBody, function (err, body) {
             if (err) console.log(err);
             else {
-              //console.log(body);
-              if(body.response_params.success_amount === 1) count++;
+              console.log(body);
+              count++;
+              //if(body.response_params.success_amount === 1) count++;
             }
           });
         });
