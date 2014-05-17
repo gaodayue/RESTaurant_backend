@@ -94,6 +94,8 @@ router.get('/nearby', passport.authenticate('bearer', { session: false }), funct
 });
 
 router.get('/show/:RESTID', passport.authenticate('bearer', { session: false }), function(req, res) {
+  var latitude = req.param('latitude'),
+      longitude = req.param('longitude');
   var restaurantId = req.params.RESTID;
   var data, query;
   if(!restaurantId)
@@ -102,7 +104,11 @@ router.get('/show/:RESTID', passport.authenticate('bearer', { session: false }),
     async.waterfall([
       function(callback){
         // check if the RESTID exist or not in database
-        query = connection.query('SELECT * FROM restaurants WHERE rest_id = ? LIMIT 1', restaurantId, function(err, restRow) {
+        var sql = 'SELECT *, '+
+                  '6371 * 2 * ASIN(SQRT( POWER(SIN(('+latitude+' -Y(rest_geo_location)) * pi()/180 / 2), 2) +'+
+                  'COS('+latitude+' * pi()/180) * COS('+latitude+' * pi()/180) *POWER(SIN(('+longitude+' -X(rest_geo_location)) * pi()/180 / 2), 2) )) as distance '+
+                  'FROM restaurants WHERE rest_id = ? LIMIT 1';
+        query = connection.query(sql, restaurantId, function(err, restRow) {
           if(err)
             callback('error');
           else {
@@ -129,6 +135,7 @@ router.get('/show/:RESTID', passport.authenticate('bearer', { session: false }),
               'pic' : arg1.rest_pic,
               'pic_thumb' : arg1.rest_pic_thumb,
               'category' : arg1.rest_category,
+              'distance' : arg1.distance,
               'dishes' : dishRow
             };
             callback(null, data);
@@ -149,15 +156,21 @@ router.get('/show/:RESTID', passport.authenticate('bearer', { session: false }),
 });
 
 router.get('/search', passport.authenticate('bearer', { session: false }), function(req, res) {
-  var keyword = req.param('keyword');
-  var page = req.param('page');
+  var keyword = req.param('keyword'),
+      latitude = req.param('latitude'),
+      longitude = req.param('longitude'),
+      page = req.param('page');
   if(!page) page = 1;
   if(!keyword) res.json(400, util.showError('invalid parameter keyword!'));
+  else if(!latitude) res.json(400, util.showError('missing latitude!')); // TODO : ADD VALIDATION
+  else if(!longitude) res.json(400, util.showError('missing longitude!')); // TODO : ADD VALIDATION
   else {
     async.waterfall([
       function(callback){
         var sql = 'SELECT rest_id, rest_name AS name, rest_address AS address, rest_geo_location AS geo_location, rest_pic AS pic, '+
-                  'rest_pic_thumb AS pic_thumb, rest_category AS category, ra_id AS mgr_id, ra_name AS mgr_name '+
+                  'rest_pic_thumb AS pic_thumb, rest_category AS category, ra_id AS mgr_id, ra_name AS mgr_name, '+
+                  '6371 * 2 * ASIN(SQRT( POWER(SIN(('+latitude+' -Y(rest_geo_location)) * pi()/180 / 2), 2) +'+
+                  'COS('+latitude+' * pi()/180) * COS('+latitude+' * pi()/180) *POWER(SIN(('+longitude+' -X(rest_geo_location)) * pi()/180 / 2), 2) )) as distance '+
                   'FROM restaurants LEFT JOIN restaurant_accounts ON rest_owner_id = ra_id '+
                   'WHERE rest_name LIKE "%'+keyword+'%" OR rest_category LIKE "%'+keyword+'%" LIMIT ?,?';
         query = connection.query(sql, [(page-1)*util.PAGING_VALUE,util.PAGING_VALUE],function(err, result){
