@@ -90,8 +90,10 @@ exports.sendPush = function (queryBody, custIds) { // will return number of succ
             if (err) console.log(err);
             else {
               console.log(body);
-              count++;
-              //if(body.response_params.success_amount === 1) count++;
+              //count++;
+              if(body) {
+                if(body.response_params.success_amount === 1) count++;
+              }
             }
           });
         });

@@ -313,6 +313,7 @@ router.post('/cancel/:INVID', passport.authenticate('bearer', { session: false }
 router.post('/accept/:INVID', passport.authenticate('bearer', { session: false }), function (req, res) {
   var invitationId = req.params.INVID;
   var custId = req.user.cust_id;
+  var custName;
 
   InvitationDAO.accept(invitationId, custId, function (err, invitation) {
     if (err) return res.json(400, util.showError(err));
@@ -324,14 +325,16 @@ router.post('/accept/:INVID', passport.authenticate('bearer', { session: false }
         _.each(invitation.participants, function (participant) {
           if(participant.cust_id != custId) // send to all except yourself!
             customerIds.push(participant.cust_id);
+          else
+            custName = participant.name;
         });
         callback(null, 'ok');
       },
       // fill query body
       function (callback) {
         queryBody.messages = {
-          title: invitation.order.customer.name + ' has just book the order!',
-          description: 'Finished booking order at ' + invitation.order.restaurant.name,
+          title: custName + ' has just accepted the invitation!',
+          description: 'Accepted invitation at ' + invitation.order.restaurant.name,
           custom_content : {
             invitation_id: invitation.inv_id,
             key2: 'value2'
@@ -353,6 +356,7 @@ router.post('/accept/:INVID', passport.authenticate('bearer', { session: false }
 router.post('/deny/:INVID', passport.authenticate('bearer', { session: false }), function (req, res) {
   var invitationId = req.params.INVID;
   var custId = req.user.cust_id;
+  var custName;
   
   InvitationDAO.deny(invitationId, custId, function (err, invitation) {
     if (err) return res.json(400, util.showError(err));
@@ -364,14 +368,16 @@ router.post('/deny/:INVID', passport.authenticate('bearer', { session: false }),
         _.each(invitation.participants, function (participant) {
           if(participant.cust_id != custId) // send to all except yourself!
             customerIds.push(participant.cust_id);
+          else
+            custName = participant.name;
         });
         callback(null, 'ok');
       },
       // fill query body
       function (callback) {
         queryBody.messages = {
-          title: invitation.order.customer.name + ' has just book the order!',
-          description: 'Finished booking order at ' + invitation.order.restaurant.name,
+          title: custName + ' has just denied the invitation!',
+          description: 'Denied invitation at ' + invitation.order.restaurant.name,
           custom_content : {
             invitation_id: invitation.inv_id,
             key2: 'value2'
