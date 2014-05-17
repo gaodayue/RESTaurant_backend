@@ -31,6 +31,76 @@ function showError() {
   });
 }
 
+function showSchedule(date) {
+  $('#schedule').html('<div class="alert alert-info">loading</div>');
+  $.get('/api/tables')
+    .done(function (tables) {
+      var params = {
+        'booked_only': true,
+        'since': date,
+        'until': date
+      }
+      $.get('/api/orders', params)
+        .done(function (orders) {
+          makeScheduleTable(tables, orders);
+        })
+        .fail(showError);
+    })
+    .fail(showError);
+}
+
+function makeScheduleTable(tables, orders) {
+  $('#schedule').empty()
+  // 1. build the table structure
+  var table = $('<table class="table table-condensed small"><thead></thead><tbody></tbody></table>');
+  var thead = table.find('thead');
+  var tbody = table.find('tbody');
+  // make thead
+  var tr = $('<tr><th width=60>Table</th></tr>');
+  for (var i = 11; i < 24; i++) {
+    $('<th width=60>' + i + ':00</th>').appendTo(tr);
+  }
+  tr.appendTo(thead);
+  // make tbody's skeleton
+  $.each(tables, function (index, table) {
+    tr = $('<tr>');
+    $('<td>').text(table.table_number + ' (' + table.capacity + ')').appendTo(tr);
+    // use 'tableNumber_time' as id for the cell
+    for (var j = 11; j < 24; j++) {
+      $('<td>').attr('id', table.tbl_id + '_' + j).appendTo(tr);
+    }
+    tr.appendTo(tbody);
+  });
+
+  var orderHandler = function (e) {
+    e.preventDefault();
+    
+    var orderId = $(this).attr('data-oid');
+    var order = findOrderById(orders, orderId);
+    showOrderModel(order);
+  }
+
+  // append a hidden schedule table to DOM so that we can find element by id later
+  table.hide();
+  $('#schedule').append(table);
+
+  // 2. put orders onto the schedule table
+  $.each(orders, function (index, order) {
+    for (var time = order.start_time; time <= order.end_time; time++) {
+      var td = $('#' + order.table_number + '_' + time);
+      if (!td) continue;
+
+      td.addClass('used').attr('data-oid', order.o_id);
+      if (time == order.start_time) {
+        td.addClass('separator').text(order.customer.name);
+      }
+      td.click(orderHandler);
+    }
+  });
+
+  table.show();
+}
+
 function findOrderById(orders, orderId) {
   for (var i = 0; i < orders.length; i++) {
     if (orders[i].o_id == orderId)

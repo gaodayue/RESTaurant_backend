@@ -65,22 +65,14 @@
                 </tr>
                 <tr>
                   <td>Table</td>
-                  <td id="order-model-table">
-                    <!-- <select >
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                    </select> -->
-                  </td>
+                  <td id="order-model-table"></td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
       </div> <!-- modal-body -->
-      <div class="modal-footer">
-        <!-- <button type="button" data-dismiss="modal" class="btn btn-success">Accept</button>
-        <button type="button" data-dismiss="modal" class="btn btn-warning">Deny</button> -->
-      </div> <!-- modal-footer -->
+      <div class="modal-footer"></div>
     </div> <!-- modal-content -->
   </div> <!-- modal-dialog -->
 </div> <!-- modal -->
@@ -141,22 +133,5 @@ $(document).ready(function () {
   loadPendingOrders();
 });
 
-
-
-
-
-
-
-//accept order
-function acorder(){
-  document.getElementById($('#id').html()+'state').innerText = 'Accept';
-  var obj = document.getElementById($('#id').html()+'verify');
-  $(obj).find('button').attr('disabled','disabled');//.get(0).setAttribute("disabled", "disabled");
-}
-
-function reject(id){
-  document.getElementById(id+'state').innerText = 'Reject';
-  $(document.getElementById(id+'verify')).find('button').attr('disabled', 'disabled');//get(1).setAttribute("disabled", "disabled");
-}
 </script>
 <% include footer %>

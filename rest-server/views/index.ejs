@@ -1,12 +1,4 @@
 <% include header %>
-<style type="text/css">
-.tdd {background-color: #5cb85c; border-left: 7px solid #8B8989 ; cursor:pointer}
-.tdd2 {background-color: #ED9C28; border-left: 7px solid #fff; cursor:pointer }
-.tddc {background-color: #5cb85c; cursor:pointer}
-.tdd2c {background-color: #ED9C28; cursor:pointer}
-.tdd3 {background-color: #E1E2DF}
-.info {width: 30%; display: inline;}
-</style>
 <div id="main" class="container">
   <div class="row">
     <ol class="breadcrumb">
@@ -16,148 +8,83 @@
 
   <ul class="pager btn-sm navbar-form" style="text-align: center">
     <li class="previous"><a href="#">&laquo; Previous</a></li>
-    <li>                
+    <li>
       <div class="form-group">
-        <input id="date-input" type="text" class="form-control" placeholder="2014-05-12">
+        <input id="date-input" type="text" class="form-control">
       </div>
     </li>
     <li class="next"><a href="#">Next &raquo;</a></li>
   </ul>
 
-<button onclick="inittable([['huama',2], ['cloud', 4] ],[ ['huama', 1, '高大月', 13, 14], ['huama', 1, 'sunhao', 12, 13], ['cloud',2, 'gdy', 14,15], ['cloud', 3, 'pol', 15, 16], ['cloud', 3, 'pol', 23, 24], ['huama', 4, 'pol', 17, 18]])" value="test">haha</button>
+  <div id="schedule"></div>
 
-  <!-- Modal -->
-  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="myModalLabel">Order Info</h4>
+<!-- Modal -->
+<div class="modal fade" id="order-model" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="order-model-id"></h4>
+      </div> <!-- modal-header -->
+      <div class="modal-body" id="modalbody">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="dishes">
+              <ul class="lines" id="order-model-dishes">
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <td>Customer</td>
+                  <td id="order-model-customer"></td>
+                </tr>
+                <tr>
+                  <td>Phone</td>
+                  <td id="order-model-phone"></td>
+                </tr>
+                <tr>
+                  <td>Date</td>
+                  <td id="order-model-date"></td>
+                </tr>
+                <tr>
+                  <td>Time</td>
+                  <td id="order-model-time"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="modal-body" id="modalbody">
-          <div class="row">
-            <div class="col-md-3">User: <strong  id="user"></strong></div>
-            <div class="col-md-3">Nums: <strong  id="nums"></strong></div>
-            <div class="col-md-3">Table: <strong  id="table"></strong></div>
-            <div class="col-md-3">Time: <strong  id="time"></strong></div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-3">Menu: </div>
-            <div class="col-md-9"> <div class="alert alert-success" id="menu"></div></div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">Price: <span style="color:red" id="price">162.8</span> RMB</div>
-          </div>
-        </div> <!-- modal-body -->
-      </div> <!-- modal-content -->
-    </div> <!-- modal-dialog -->
-  </div> <!-- modal -->
+      </div> <!-- modal-body -->
+      <div class="modal-footer"></div>
+    </div> <!-- modal-content -->
+  </div> <!-- modal-dialog -->
+</div> <!-- modal -->
 
 <script type="text/javascript">
 
-// input
-// [ [table_number, capacity], ...]
-// [ [table_number, num_of_people, start_time, end_time], ... ]
-// example
-// inittable([['huama',2], ['cloud', 4] ],[ ['huama', 1, '高大月', 13, 14], ['huama', 1, 'sunhao', 12, 13], ['cloud',2, 'gdy', 14,15], ['cloud', 3, 'pol', 15, 16], ['cloud', 3, 'pol', 23, 24], ['huama', 4, 'pol', 17, 18]])
-function inittable (tables, orders) {
-
-  var table = $('<table class="table table-condensed small"><thead></thead><tbody></tbody></table>');
-  var thead = table.find('thead');
-  var tbody = table.find('tbody');
-
-  // populate table structure
-  var tr = $('<tr><th width=60>Table</th></tr>');
-  for (var i = 11; i < 24; i++) {
-    $('<th width=60>' + i + ':00</th>').appendTo(tr);
-  }
-  tr.appendTo(thead);
-  // table.hide();
-
-  for (var i = 0; i < tables.length; i++) {
-    tr = $('<tr class="tdd3"><td>'+ tables[i][0] +'</td></tr>');
-    for (var j = 11; j < 24; j++) {
-      $('<td id=' + tables[i][0]+j + '>&nbsp;</td>').appendTo(tr);  // use table_number + time as td's id
-    }
-    tr.appendTo(tbody);
-  }
-  table.appendTo($('#main'));
-
-  // fill orders
-  for (var i = 0; i < orders.length; i++) {
-    for(var j = 11; j < 24; j++){
-        var obj = document.getElementById(orders[i][0] + j);
-        
-        if(orders[i][3] <= j && orders[i][4] > j){
-          obj.abbr = orders[i][1];
-          obj.innerText = orders[i][2];
-          obj.setAttribute("data-toggle", "modal");
-          obj.setAttribute("data-target", "#myModal");
-          obj.setAttribute("onclick", "orderinfo("+(orders[i][0]+j)+")");
-        }
-        
-        if(j > 11 && obj.abbr == document.getElementById(orders[i][0] + (j-1)).abbr){
-            obj.innerText = "";
-            obj.style = "border-left: none";
-        }  
-
-        if(j < 23 && document.getElementById(orders[i][0] + (j+1)).abbr == obj.abbr)
-                document.getElementById(orders[i][0] + (j+1)).innerText = "";
-        }
-  }
-
-  //init class
-  for(var i = 0; i < orders.length; i++){
-
-      for(var j = 11; j < 23; j++){
-        var obj = document.getElementById(orders[i][0] + j);
-        var obj2 = document.getElementById(orders[i][0] + (j+1));
-
-            if(obj.abbr == "" && j < 22)
-                continue;
-        
-            if(j == 11 && obj.abbr != "")
-                obj.className = "tdd";
-
-            if(j>11 && document.getElementById(orders[i][0]+(j-1)).abbr == "" &&  obj.abbr != ""){
-                //alert(orders[1][2]);
-                obj.className = "tdd";
-            }
-
-            if(obj.abbr == obj2.abbr){
-                if(obj.className == "tdd" || obj.className == "tdd2")
-                    obj2.className = obj.className+"c";
-                else
-                    obj2.className = obj.className;
-                 
-              }
-              else if(obj2.abbr != ""){
-                if(obj.className == "tdd" || obj.className == "tddc")
-                  obj2.className = "tdd2";
-                else
-                    obj2.className = "tdd";
-              } 
-      }
-  }
-
-  // table.show();
-
-}
-
 $(document).ready(function () {
-  $('#date-input').datepicker({
-    format: 'yyyy-mm-dd'
-  });
-});
+  var now = new Date().yyyymmdd();
 
-function orderinfo(e){
-      document.getElementById("user").innerText =  document.getElementById(e).innerText;
-      document.getElementById("nums").innerText =  3;
-      document.getElementById("table").innerText =  document.getElementById(e).abbr;
-      document.getElementById("time").innerText =  "11-13";
-      document.getElementById("menu").innerText =  "宫保鸡丁＊2   鱼香肉丝  3   娃娃鱼  3   松仁玉米＊1 糯香排骨＊1 红烧肉＊1 皮蛋瘦肉粥＊1 米饭＊1";
- } 
+  var dateInput = $('#date-input');
+  dateInput
+    .val(now)
+    .datepicker({ format: 'yyyy-mm-dd' })
+    .on('changeDate', function (e) {
+      showSchedule(e.date.yyyymmdd());
+    });
+
+  // $('li.previous a').click(function (e) {
+  //   e.preventDefault();
+    
+  //   var curDate = dateInput.datepicker('getDate');
+  //   dateInput.datepicker('setDate', curDate.getDate() + 1);
+  // });
+
+  showSchedule(now);
+});
 
 </script>
 </div>
