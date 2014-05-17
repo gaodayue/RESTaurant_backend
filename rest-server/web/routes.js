@@ -4,6 +4,7 @@ var admin   = require('./admin');
 var manager = require('./manager');
 var tables  = require('./tables');
 var dishes  = require('./dishes');
+var coupons = require('./coupons');
 
 module.exports = function (app) {
   app.use('/', index);
@@ -12,4 +13,5 @@ module.exports = function (app) {
   app.use('/manager', manager);
   app.use('/tables', tables);
   app.use('/dishes', dishes);
+  app.use('/coupons', coupons);
 }

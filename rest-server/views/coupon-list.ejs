@@ -1,0 +1,144 @@
+<% include header %>
+<div id="main" class="container">
+  <div class="row">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      <li class="active">Coupons</li>
+    </ol>
+  </div>
+
+  <a class="btn btn-primary" href="/coupons/create">Add coupons</a>
+  <p></p>
+  <% if (error) { %>
+  	<div class="alert alert-danger"><%= error %></div>
+
+  <% } else if (coupons.length == 0) { %>
+    <div class="alert alert-info">There is no pending orders.</div>
+  <% } else { %>
+  <table class="table table-hover">
+  	<thead>
+  		<tr>
+  			<th>ID</th>
+  			<th>Title</th>
+  			<th>Message</th>
+  		    <th>Start</th>
+  			<th>End</th>
+  			<th>Handle</th>
+  		</tr>
+  	</thead>
+  	<tbody>
+  		<% coupons.forEach( function (coupon) { %>
+  		<tr id="<%= coupon.c_id %>">
+  			<td><%= coupon.c_id %></td>
+  			<td><%= coupon.c_title %></td>
+  			<td><%= coupon.c_message %></td>
+			<td><%= dateformat(new Date(coupon.c_start_date),'yyyy-mm-dd') %></td>
+			<td><%= dateformat(new Date(coupon.c_end_date), 'yyyy-mm-dd') %></td>
+			<td><button class="btn btn-info" data-toggle="modal" data-target="#myModal" onclick="editcoupon(<%= coupon.c_id %>)">Edit</button></td>
+  		</tr>
+  		<% } )%>
+  	</tbody>
+  </table>
+  <% } %>
+  <script>
+  function editcoupon(id){
+   	$('#c_id').html($('#'+id).find('td').eq(0).text());
+   	$('#title').val($('#'+id).find('td').eq(1).text());
+   	$('#message').text($('#'+id).find('td').eq(2).text());
+   	$('#start_time').val($('#'+id).find('td').eq(3).text());
+   	$('#end_time').val($('#'+id).find('td').eq(4).text());
+  }
+
+  function change(){
+    var msg = $('#message').val();
+  	var c_id = $('#c_id').html();
+  	var start = $('#start_time').val();
+  	var end = $('#end_time').val();
+  	var title = $('#title').val();
+  	var btn = $('#save').button('loading');
+  	
+  	$.ajax({
+     type: "post",
+     url: "/coupons/edit",
+     data: {c_id: c_id, msg: msg, start: start, end: end, title: title},
+     
+     })
+     .done(function(data){
+     	showSuccess();
+     	$('#'+c_id).find('td').eq(1).text(title);
+      	$('#'+c_id).find('td').eq(2).text(msg);
+      	$('#'+c_id).find('td').eq(3).text(start);
+      	$('#'+c_id).find('td').eq(4).text(end);
+     })
+     .fail(showError)
+     .always(function () {
+     	btn.button('reset');
+     	$('.close')[0].click();
+     });
+  }
+
+  $(document).ready(function () {
+      $('#start_time').datepicker({
+        format: 'yyyy-mm-dd'
+      });
+
+      $('#end_time').datepicker({
+        format: 'yyyy-mm-dd'
+      });
+
+    
+    });
+    
+  </script>
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel"> ID <strong id="c_id"></strong></h4>
+        </div>
+        <div class="modal-body" id="modalbody">
+          <div class="form-horizontal" role="form" method="POST">
+    		<div class="form-group">
+	    		<label for="title" class="col-sm-2 control-label">Title</label>
+	    		<div class="col-sm-10">
+	      		<input type="text" class="form-control" id="title" name="title" placeholder="Title">
+	    	  	</div>
+  			</div>
+			  <div class="form-group">
+			    <label for="message" class="col-sm-2 control-label">Message</label>
+			    <div class="col-sm-10">
+			      <textarea class="form-control" row=3 id="message" name="message" placeholder="Message"></textarea>
+			    </div>
+			  </div>
+
+			  <div class="form-group">
+			    <label for="start_time" class="col-sm-2 control-label">Start time</label>
+			    <div class="col-sm-10">
+			      <input type="text" class="form-control" id="start_time" name="start_time" placeholder="Start time">
+			    </div>
+			  </div>
+
+			  <div class="form-group">
+			    <label for="end_time" class="col-sm-2 control-label">End time</label>
+			    <div class="col-sm-10">
+			      <input type="text" class="form-control" id="end_time" name="end_time" placeholder="End time">
+			    </div>
+			  </div>
+
+		  </div>
+		  <div class="modal-footer">
+        	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        	<button type="button" class="btn btn-info" onclick="change()" id="save" data-loading-text="loading...">Save changes</button>
+      	  </div>
+
+        </div> <!-- modal-body -->
+      </div> <!-- modal-content -->
+    </div> <!-- modal-dialog -->
+  </div> <!-- modal -->
+
+
+ </div>
+<% include footer %>

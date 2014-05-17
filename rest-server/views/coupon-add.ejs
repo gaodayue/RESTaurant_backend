@@ -1,0 +1,66 @@
+<% include header %>
+<div id="main" class="container">
+  <div class="row">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      <li class="active">Add Coupons</li>
+    </ol>
+  </div>
+  <div class="col-md-3"></div>
+  <div class="col-md-6"">
+  <form class="form-horizontal" role="form" method="POST">
+    <div class="form-group">
+    <label for="title" class="col-sm-2 control-label">Title</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="title" name="title" placeholder="Title">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="message" class="col-sm-2 control-label">Message</label>
+    <div class="col-sm-10">
+      <textarea class="form-control" row=3 id="message" name="message" placeholder="Message"></textarea>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="start_time" class="col-sm-2 control-label">Start time</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="start_time" name="start_time" placeholder="Start time">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="end_time" class="col-sm-2 control-label">End time</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="end_time" name="end_time" placeholder="End time">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-success">Add</button>
+    </div>
+  </div>
+
+  </form>
+
+
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      $('#start_time').datepicker({
+        format: 'yyyy-mm-dd'
+      });
+    });
+
+    $(document).ready(function () {
+      $('#end_time').datepicker({
+        format: 'yyyy-mm-dd'
+      });
+    });
+  </script>
+
+
+ </div>
+<% include footer %>
