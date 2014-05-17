@@ -49,6 +49,15 @@ exports.isArrayNotEmpty = function(array) {
 };
 
 exports.sendPush = function (queryBody, custIds) { // will return number of successful push
+  // the query.messages should configured manually where this helper is called
+  /*queryBody.messages = {
+    title: invitation.order.customer.name + ' has just book the order!',
+    description: 'Finished booking order at ' + invitation.order.restaurant.name,
+    custom_content : {
+      invitation_id: invitation.inv_id,
+      key2: 'value2'
+    }
+  };*/
   async.waterfall([
     // 1. get push_id
     function (callback) {
