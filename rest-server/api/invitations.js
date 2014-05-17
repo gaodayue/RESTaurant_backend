@@ -212,7 +212,7 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
         },
         // send push!
         function (callback) {
-          var totalSuccess = util.sendPush(queryBody, customerIds);
+          var totalPush = util.sendPush(queryBody, customerIds);
           callback(null, 'ok');
         }
       ], function (err, result) {
@@ -261,7 +261,7 @@ router.post('/book/:INVID', passport.authenticate('bearer', { session: false }),
       },
       // send push!
       function (callback) {
-        var totalSuccess = util.sendPush(queryBody, customerIds);
+        var totalPush = util.sendPush(queryBody, customerIds);
         callback(null, 'ok');
       }
     ], function (err, result) {
@@ -301,7 +301,7 @@ router.post('/cancel/:INVID', passport.authenticate('bearer', { session: false }
       },
       // send push!
       function (callback) {
-        var totalSuccess = util.sendPush(queryBody, customerIds);
+        var totalPush = util.sendPush(queryBody, customerIds);
         callback(null, 'ok');
       }
     ], function (err, result) {
@@ -344,7 +344,7 @@ router.post('/accept/:INVID', passport.authenticate('bearer', { session: false }
       },
       // send push!
       function (callback) {
-        var totalSuccess = util.sendPush(queryBody, customerIds);
+        var totalPush = util.sendPush(queryBody, customerIds);
         callback(null, 'ok');
       }
     ], function (err, result) {
@@ -387,7 +387,7 @@ router.post('/deny/:INVID', passport.authenticate('bearer', { session: false }),
       },
       // send push!
       function (callback) {
-        var totalSuccess = util.sendPush(queryBody, customerIds);
+        var totalPush = util.sendPush(queryBody, customerIds);
         callback(null, 'ok');
       }
     ], function (err, result) {
