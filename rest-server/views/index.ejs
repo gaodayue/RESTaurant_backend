@@ -74,14 +74,24 @@ $(document).ready(function () {
     .datepicker({ format: 'yyyy-mm-dd' })
     .on('changeDate', function (e) {
       showSchedule(e.date.yyyymmdd());
+      dateInput.datepicker('hide');
     });
 
-  // $('li.previous a').click(function (e) {
-  //   e.preventDefault();
-    
-  //   var curDate = dateInput.datepicker('getDate');
-  //   dateInput.datepicker('setDate', curDate.getDate() + 1);
-  // });
+  $('li.previous a').click(function (e) {
+    e.preventDefault();
+    var date = new Date(dateInput.val());
+    date.setDate(date.getDate() - 1);
+    dateInput.datepicker('setValue', date);
+    showSchedule(date.yyyymmdd());
+  });
+
+  $('li.next a').click(function (e) {
+    e.preventDefault();
+    var date = new Date(dateInput.val());
+    date.setDate(date.getDate() + 1);
+    dateInput.datepicker('setValue', date);
+    showSchedule(date.yyyymmdd());
+  });
 
   showSchedule(now);
 });
