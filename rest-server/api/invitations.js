@@ -236,7 +236,37 @@ router.post('/book/:INVID', passport.authenticate('bearer', { session: false }),
 
   InvitationDAO.book(invitationId, custId, function (err, invitation) {
     if (err) return res.json(400, util.showError(err));
-    res.json(200, invitation);
+    var customerIds = [];
+    var queryBody = {};
+    async.series([
+      // fill customer ids
+      function (callback) {
+        _.each(invitation.participants, function (participant) {
+          if(participant.is_host === 'false')
+            customerIds.push(participant.cust_id);
+        });
+        callback(null, 'ok');
+      },
+      // fill query body
+      function (callback) {
+        queryBody.messages = {
+          title: invitation.order.customer.name + ' has just book the order!',
+          description: 'Finished booking order at ' + invitation.order.restaurant.name,
+          custom_content : {
+            invitation_id: invitation.inv_id,
+            key2: 'value2'
+          }
+        };
+        callback(null, 'ok');
+      },
+      // send push!
+      function (callback) {
+        var totalSuccess = util.sendPush(queryBody, customerIds);
+        callback(null, 'ok');
+      }
+    ], function (err, result) {
+      res.json(200, invitation);
+    });
   });
 });
 
@@ -246,7 +276,37 @@ router.post('/cancel/:INVID', passport.authenticate('bearer', { session: false }
 
   InvitationDAO.cancel(invitationId, custId, function (err, invitation) {
     if (err) return res.json(400, util.showError(err));
-    res.json(200, invitation);
+    var customerIds = [];
+    var queryBody = {};
+    async.series([
+      // fill customer ids
+      function (callback) {
+        _.each(invitation.participants, function (participant) {
+          if(participant.is_host === 'false')
+            customerIds.push(participant.cust_id);
+        });
+        callback(null, 'ok');
+      },
+      // fill query body
+      function (callback) {
+        queryBody.messages = {
+          title: invitation.order.customer.name + ' has just cancel the order!',
+          description: 'Canceled booking order at ' + invitation.order.restaurant.name,
+          custom_content : {
+            invitation_id: invitation.inv_id,
+            key2: 'value2'
+          }
+        };
+        callback(null, 'ok');
+      },
+      // send push!
+      function (callback) {
+        var totalSuccess = util.sendPush(queryBody, customerIds);
+        callback(null, 'ok');
+      }
+    ], function (err, result) {
+      res.json(200, invitation);
+    });
   });
 });
 
@@ -256,7 +316,37 @@ router.post('/accept/:INVID', passport.authenticate('bearer', { session: false }
 
   InvitationDAO.accept(invitationId, custId, function (err, invitation) {
     if (err) return res.json(400, util.showError(err));
-    res.json(200, invitation);
+    var customerIds = [];
+    var queryBody = {};
+    async.series([
+      // fill customer ids
+      function (callback) {
+        _.each(invitation.participants, function (participant) {
+          if(participant.cust_id != custId) // send to all except yourself!
+            customerIds.push(participant.cust_id);
+        });
+        callback(null, 'ok');
+      },
+      // fill query body
+      function (callback) {
+        queryBody.messages = {
+          title: invitation.order.customer.name + ' has just book the order!',
+          description: 'Finished booking order at ' + invitation.order.restaurant.name,
+          custom_content : {
+            invitation_id: invitation.inv_id,
+            key2: 'value2'
+          }
+        };
+        callback(null, 'ok');
+      },
+      // send push!
+      function (callback) {
+        var totalSuccess = util.sendPush(queryBody, customerIds);
+        callback(null, 'ok');
+      }
+    ], function (err, result) {
+      res.json(200, invitation);
+    });
   });
 });
 
@@ -266,7 +356,37 @@ router.post('/deny/:INVID', passport.authenticate('bearer', { session: false }),
   
   InvitationDAO.deny(invitationId, custId, function (err, invitation) {
     if (err) return res.json(400, util.showError(err));
-    res.json(200, invitation);
+    var customerIds = [];
+    var queryBody = {};
+    async.series([
+      // fill customer ids
+      function (callback) {
+        _.each(invitation.participants, function (participant) {
+          if(participant.cust_id != custId) // send to all except yourself!
+            customerIds.push(participant.cust_id);
+        });
+        callback(null, 'ok');
+      },
+      // fill query body
+      function (callback) {
+        queryBody.messages = {
+          title: invitation.order.customer.name + ' has just book the order!',
+          description: 'Finished booking order at ' + invitation.order.restaurant.name,
+          custom_content : {
+            invitation_id: invitation.inv_id,
+            key2: 'value2'
+          }
+        };
+        callback(null, 'ok');
+      },
+      // send push!
+      function (callback) {
+        var totalSuccess = util.sendPush(queryBody, customerIds);
+        callback(null, 'ok');
+      }
+    ], function (err, result) {
+      res.json(200, invitation);
+    });
   });
 });
 
