@@ -161,6 +161,9 @@ module.exports = {
       whereClause  += ' AND o_status = ' + connection.escape(ORDER_STATE.BOOKING);
     if (bookedOnly)
       whereClause  += ' AND o_status = ' + connection.escape(ORDER_STATE.BOOKING_SUCCEED);
+    // always exclude orders in planning state
+    if (!pendingOnly && !bookedOnly)
+      whereClause  += ' AND o_status != ' + connection.escape(ORDER_STATE.PLANNING);
 
     if (sinceDate)
       whereClause  += ' AND o_request_date >= ' + connection.escape(sinceDate);

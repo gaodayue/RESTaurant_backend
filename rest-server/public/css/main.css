@@ -67,9 +67,12 @@ img.rest-img-large {
 /*------------------------
  * styles for order model
  *------------------------*/
+#order-model .label {
+  font-size: 14px;
+}
 #order-model .modal-footer {
   margin: 0;
- }
+}
 #order-model td:first-child {
   text-align: right;
   font-weight: bold;
