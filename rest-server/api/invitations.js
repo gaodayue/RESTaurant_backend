@@ -156,7 +156,8 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
                 for(var i in invitation.customer_ids){ // creating array for bulk insert
                   // inv_id, inv_cust_id, inv_order_id, inv_is_host, inv_status
                   var isHost = (invitation.customer_ids[i] == custId) ? 'true' : 'false';
-                  data.push([invitation_id, invitation.customer_ids[i], orderId, isHost, 's']);
+                  var status = (invitation.customer_ids[i] == custId) ? 'a' : 's';
+                  data.push([invitation_id, invitation.customer_ids[i], orderId, isHost, status]);
                 }
                 connection.query('INSERT INTO invitations (inv_id, inv_cust_id, inv_order_id, inv_is_host, inv_status) VALUES ?', [data], function(err, result) {
                   if (err) {
@@ -223,7 +224,6 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
             key2: 'value2'
           }
         };
-        //queryBody.user_id = '729915559012261118'; // TODO : fill the user ID from database
         queryBody.msg_keys = 'invitation';
         queryBody.message_type = 1; // 0:toast, 1:notification
 
@@ -233,7 +233,7 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
           /*baiduPushClient.pushMsg(queryBody, function (err, body) {
             
           });*/
-          console.log(queryBody);
+          //console.log(queryBody);
         });
       }
       callback(null, invitation);
