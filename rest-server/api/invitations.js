@@ -205,7 +205,7 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
             description: 'Let\'s eat at '+invitation.order.restaurant.name,
             custom_content : {
               invitation_id: invitation.inv_id,
-              key2: 'value2'
+              type: 'invitation'
             }
           };
           callback(null, 'ok');
@@ -254,7 +254,7 @@ router.post('/book/:INVID', passport.authenticate('bearer', { session: false }),
           description: 'Finished booking order at ' + invitation.order.restaurant.name,
           custom_content : {
             invitation_id: invitation.inv_id,
-            key2: 'value2'
+            type: 'invitation'
           }
         };
         callback(null, 'ok');
@@ -294,7 +294,7 @@ router.post('/cancel/:INVID', passport.authenticate('bearer', { session: false }
           description: 'Canceled booking order at ' + invitation.order.restaurant.name,
           custom_content : {
             invitation_id: invitation.inv_id,
-            key2: 'value2'
+            type: 'invitation'
           }
         };
         callback(null, 'ok');
@@ -337,7 +337,7 @@ router.post('/accept/:INVID', passport.authenticate('bearer', { session: false }
           description: 'Accepted invitation at ' + invitation.order.restaurant.name,
           custom_content : {
             invitation_id: invitation.inv_id,
-            key2: 'value2'
+            type: 'invitation'
           }
         };
         callback(null, 'ok');
@@ -380,7 +380,7 @@ router.post('/deny/:INVID', passport.authenticate('bearer', { session: false }),
           description: 'Denied invitation at ' + invitation.order.restaurant.name,
           custom_content : {
             invitation_id: invitation.inv_id,
-            key2: 'value2'
+            type: 'invitation'
           }
         };
         callback(null, 'ok');

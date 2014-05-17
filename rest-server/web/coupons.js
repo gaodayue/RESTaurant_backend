@@ -72,4 +72,45 @@ router.post('/create', function (req, res) {
   });
 });
 
+router.post('/push/:CID', function (req, res) {
+  if (!req.session.manager) {
+    return res.redirect('/manager/login');
+  }
+  var couponId = req.params.CID;
+  var restId = req.session.manager.rest_id;
+  var coupon = req.body;
+
+  var customerIds = [];
+  var queryBody = {};
+  async.series([
+    // fill customer ids
+    function (callback) {
+      _.each(invitation.participants, function (participant) {
+        if(participant.is_host === 'false')
+          customerIds.push(participant.cust_id);
+      });
+      callback(null, 'ok');
+    },
+    // fill query body
+    function (callback) {
+      queryBody.messages = {
+        title: invitation.order.restaurant.name + ' just posted a coupon',
+        description: coupon.title,
+        custom_content : {
+          restaurant_id: restId,
+          type: 'coupon'
+        }
+      };
+      callback(null, 'ok');
+    },
+    // send push!
+    function (callback) {
+      var totalPush = util.sendPush(queryBody, customerIds);
+      callback(null, 'ok');
+    }
+  ], function (err, result) {
+    callback(null, invitation);
+  });
+});
+
 module.exports = router;
