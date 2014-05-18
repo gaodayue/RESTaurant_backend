@@ -32,7 +32,7 @@ Usage
    * edit each restaurant
    * add manager account for each restaurant
 
-![Image of SuperAdmin page](https://github.com/gaodayue/RESTaurant_backend/tree/master/docs/admin.png)
+![Image of SuperAdmin page](docs/admin.png)
 
 2. Restaurant manager
    * login at "localhost/manager/login".
@@ -43,7 +43,7 @@ Usage
    * accept/deny pending orders
    * view accepted order in schedule table.
 
-![Image of index page](https://github.com/gaodayue/RESTaurant_backend/tree/master/docs/index.png)
+![Image of index page](docs/index.png)
 
 Credits
 -----------
