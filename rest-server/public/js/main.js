@@ -67,7 +67,7 @@ function makeScheduleTable(tables, orders) {
     $('<td>').text(table.table_number + ' (' + table.capacity + ')').appendTo(tr);
     // use 'tableNumber_time' as id for the cell
     for (var j = 11; j < 24; j++) {
-      $('<td>').attr('id', table.tbl_id + '_' + j).appendTo(tr);
+      $('<td>').attr('id', table.table_number + '_' + j).appendTo(tr);
     }
     tr.appendTo(tbody);
   });
