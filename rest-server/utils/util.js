@@ -96,7 +96,7 @@ exports.sendPush = function (queryBody, custIds) { // will return number of succ
           queryBody.msg_keys = uuid.v4(); // random msg_key to be unique
           queryBody.user_id = pushId;
           baiduPushClient.pushMsg(queryBody, function (err, body) {
-            if (err) console.log(err);
+            if (err) console.log('BAIDU PUSH :' + err);
             else {
               console.log(body);
               count++; // just return the total push

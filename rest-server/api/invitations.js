@@ -50,7 +50,7 @@ router.get('/', passport.authenticate('bearer', { session: false }), function (r
     });
 
     async.series(tasks, function (err, results) {
-      if (err) res.json(400, util.showError(err));
+      if (err) res.json(500, util.showError(err));
       res.json(200, results);
     });
 
@@ -61,7 +61,7 @@ router.get('/:INVID', passport.authenticate('bearer', { session: false }), funct
   var invitationId = req.params.INVID;
   
   InvitationDAO.getInvitationById(invitationId, function (err, invitation) {
-    if(err) return res.json(400, util.showError(err));
+    if(err) return res.json(500, util.showError(err));
     res.json(200, invitation);
   });
 });
@@ -223,7 +223,7 @@ router.post('/create', passport.authenticate('bearer', { session: false }), func
   function (err, result) {
     if (err) {
       console.error(err);
-      return res.json(400, util.showError(err));
+      return res.json(500, util.showError(err));
     }
 
     res.json(200, result);
@@ -235,7 +235,7 @@ router.post('/book/:INVID', passport.authenticate('bearer', { session: false }),
   var custId = req.user.cust_id;
 
   InvitationDAO.book(invitationId, custId, function (err, invitation) {
-    if (err) return res.json(400, util.showError(err));
+    if (err) return res.json(500, util.showError(err));
     var customerIds = [];
     var queryBody = {};
     async.series([
@@ -275,7 +275,7 @@ router.post('/cancel/:INVID', passport.authenticate('bearer', { session: false }
   var custId = req.user.cust_id;
 
   InvitationDAO.cancel(invitationId, custId, function (err, invitation) {
-    if (err) return res.json(400, util.showError(err));
+    if (err) return res.json(500, util.showError(err));
     var customerIds = [];
     var queryBody = {};
     async.series([
@@ -316,7 +316,7 @@ router.post('/accept/:INVID', passport.authenticate('bearer', { session: false }
   var custName;
 
   InvitationDAO.accept(invitationId, custId, function (err, invitation) {
-    if (err) return res.json(400, util.showError(err));
+    if (err) return res.json(500, util.showError(err));
     var customerIds = [];
     var queryBody = {};
     async.series([
@@ -359,7 +359,7 @@ router.post('/deny/:INVID', passport.authenticate('bearer', { session: false }),
   var custName;
   
   InvitationDAO.deny(invitationId, custId, function (err, invitation) {
-    if (err) return res.json(400, util.showError(err));
+    if (err) return res.json(500, util.showError(err));
     var customerIds = [];
     var queryBody = {};
     async.series([

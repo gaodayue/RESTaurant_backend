@@ -48,7 +48,7 @@ router.post('/register', passport.authenticate('bearer', { session: false }), fu
   else {
     var sql = 'UPDATE customer_accounts SET cust_push_id = ? WHERE cust_id = ?';
     connection.query(sql, [pushId, custId], function (err, result) {
-      if(err) res.json(500, util.showError('database error'));
+      if(err) res.json(500, util.showError(err));
       else {
         res.json(200, 'ok');
       }

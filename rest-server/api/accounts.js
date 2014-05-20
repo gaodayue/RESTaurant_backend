@@ -21,7 +21,7 @@ router.get('/', function(req, res) {
     function(callback){
       query = connection.query('SELECT cust_id, cust_name as name, cust_phoneno as phoneno FROM customer_accounts', function(err, result){
         if(err)
-          callback('error');
+          callback(err);
         else {
           if(typeof result !== 'undefined' && result.length > 0){
             callback(null, result);
@@ -33,10 +33,10 @@ router.get('/', function(req, res) {
     }
   ], function(err, result){
       if(err){
-        if(err === 'error')
-          res.json(500, util.showError('unexpected error'));
-        else if(err === 'not exist')
+        if(err === 'not exist')
           res.json(200, []);
+        else
+          res.json(500, util.showError(err));
       }
       else
         res.json(200, result);
@@ -65,7 +65,7 @@ router.post('/signup', function(req, res) {
         query = connection.query('INSERT INTO customer_accounts SET ?', post, function(err, result){
           if(err){
             if(err.code === 'ER_DUP_ENTRY') callback('duplicate');
-            else callback('error');
+            else callback(err);
           }
           else{
             custId = result.insertId;
@@ -82,15 +82,14 @@ router.post('/signup', function(req, res) {
           'cust_access_token' : jwt.encode({cust_id:arg1, token:t}, config.jwt_secret)
         };
         redisClient.set('cust:'+data.cust_id, t, function(err, result) {
-          if(err) callback('redis error');
+          if(err) callback(err);
           else callback(null, data);
         });
       }
     ], function(err, result){
       if(err){
         if(err === 'duplicate') res.json(400, util.showError('duplicate phoneno!'));
-        else if(err === 'redis error') res.json(500, util.showError('redis error'));
-        else res.json(500, util.showError('unexpected error'));
+        else res.json(500, util.showError(err));
       }
       res.json(200, result);
     });
@@ -111,7 +110,7 @@ router.post('/signin', function(req, res) {
       function(callback){
         query = connection.query('SELECT * FROM customer_accounts WHERE cust_phoneno = ?', account.phoneno, function(err, result){
           if(err){
-            callback('error');
+            callback(err);
           }
           else{
             if (typeof result !== 'undefined' && result.length > 0)
@@ -139,15 +138,14 @@ router.post('/signin', function(req, res) {
           'cust_access_token' : jwt.encode({cust_id:arg1.cust_id, token:t}, config.jwt_secret)
         };
         redisClient.set('cust:'+data.cust_id, t, function(err, result) {
-          if(err) callback('redis error');
+          if(err) callback(err);
           else callback(null, data);
         });
       }
     ], function(err, result){
       if(err){
         if(err === 'invalid') res.json(400, util.showError('invalid username/password'));
-        else if(err === 'redis error') res.json(500, util.showError('redis error'));
-        else res.json(500, util.showError('unexpected error'));
+        else res.json(500, util.showError(err));
       }
       res.json(200, result);
     });
@@ -159,7 +157,7 @@ router.post('/logout', passport.authenticate('bearer', { session: false }), func
   if(!custId) res.json(400, util.showError('missing customer ID'));
   else {
     redisClient.del('cust:'+custId, function(err, result) {
-      if(err) res.json(500, util.showError('redis error'));
+      if(err) res.json(500, util.showError(err));
       else res.json(200, 'logout success');
     });
   }

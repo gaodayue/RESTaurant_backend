@@ -40,7 +40,7 @@ router.get('/nearby', passport.authenticate('bearer', { session: false }), funct
                   'LEFT JOIN restaurant_accounts ON rest_owner_id = ra_id ORDER BY distance ASC, rest_id ASC LIMIT ?,?';
         query = connection.query(sql, [(page-1)*util.PAGING_VALUE,util.PAGING_VALUE],function(err, result){
           if(err)
-            callback('error');
+            callback(err);
           else {
             if(typeof result !== 'undefined' && result.length > 0){
               for(var i in result){
@@ -61,7 +61,7 @@ router.get('/nearby', passport.authenticate('bearer', { session: false }), funct
           if(err === 'not exist')
             res.json(200, []);
           else
-            res.json(400, util.showError('unexpected error'));
+            res.json(500, util.showError(err));
         }
         else
           res.json(200, result);
@@ -110,7 +110,7 @@ router.get('/show/:RESTID', passport.authenticate('bearer', { session: false }),
                   'FROM restaurants WHERE rest_id = ? LIMIT 1';
         query = connection.query(sql, restaurantId, function(err, restRow) {
           if(err)
-            callback('error');
+            callback(err);
           else {
             if (typeof restRow !== 'undefined' && restRow.length > 0)
               callback(null, restRow[0]);
@@ -122,7 +122,7 @@ router.get('/show/:RESTID', passport.authenticate('bearer', { session: false }),
       function(arg1, callback){
         query = connection.query('SELECT d_id, d_name AS name, d_price AS price FROM dishes WHERE d_rest_id = ?', restaurantId, function(err, dishRow) {
           if (err)
-            callback('error');
+            callback(err);
           else {
             var data = {
               'rest_id' : arg1.rest_id,
@@ -144,10 +144,10 @@ router.get('/show/:RESTID', passport.authenticate('bearer', { session: false }),
       }
     ], function(err, result){
       if(err){
-        if(err === 'error')
-          res.json(400, util.showError('unexpected error'));
-        else if(err === 'not exist')
+        if(err === 'not exist')
           res.json(200, []);
+        else
+          res.json(500, util.showError(err));
       }
       else
         res.json(200, result);
@@ -175,7 +175,7 @@ router.get('/search', passport.authenticate('bearer', { session: false }), funct
                   'WHERE rest_name LIKE "%'+keyword+'%" OR rest_category LIKE "%'+keyword+'%" LIMIT ?,?';
         query = connection.query(sql, [(page-1)*util.PAGING_VALUE,util.PAGING_VALUE],function(err, result){
           if(err)
-            callback('error');
+            callback(err);
           else {
             if(typeof result !== 'undefined' && result.length > 0){
               for(var i in result){
@@ -196,7 +196,7 @@ router.get('/search', passport.authenticate('bearer', { session: false }), funct
           if(err === 'not exist')
             res.json(200, []);
           else
-            res.json(400, util.showError('unexpected error'));
+            res.json(500, util.showError(err));
         }
         else
           res.json(200, result);
